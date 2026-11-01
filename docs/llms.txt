@@ -1,0 +1,23 @@
+# Tiendanube MCP Server
+
+> Free, open-source Model Context Protocol (MCP) server that lets AI agents (Claude Code, OpenAI Codex, OpenCode, Gemini CLI, Cursor, VS Code Copilot, Windsurf) manage a Tiendanube / Nuvemshop store through the official API: 191 tools across products, variants, stock, orders, customers, coupons, shipping, payments, webhooks and more. Read-only mode, scope-aware errors, rate-limit handling. MIT licensed. Not affiliated with Tiendanube or Nuvemshop.
+
+Install source: `npx -y github:fedeclavero/tiendanube-mcp` (Node.js >= 18). Required env: `TIENDANUBE_STORE_ID`, `TIENDANUBE_ACCESS_TOKEN`; recommended `TIENDANUBE_USER_AGENT`, `TIENDANUBE_READ_ONLY=true`. Brazil: `TIENDANUBE_API_DOMAIN=https://api.nuvemshop.com.br`.
+
+## For AI agents installing this server
+
+- [Agent install guide](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/AGENT_INSTALL.md): step-by-step install, which data to ask the user, per-client configs (Claude Code, Codex, OpenCode, Gemini CLI, Claude Desktop, Cursor, Windsurf, VS Code), secret-handling rules, verification.
+- [Getting credentials](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/GETTING_CREDENTIALS.md): how a merchant gets a Store ID and access token, and which OAuth scopes to grant (Spanish and English).
+
+## Documentation
+
+- [README (English)](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/README.md): overview, quick start, FAQ.
+- [README (Español)](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/README.es.md): resumen, inicio rápido, preguntas frecuentes.
+- [Tool reference](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/TOOLS.md): all 191 tools with HTTP route, required scope and effect.
+- [Prompt recipes](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/RECIPES.md): 25 ready-to-use prompts (ES/EN).
+- [Troubleshooting](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/TROUBLESHOOTING.md): error codes and fixes.
+
+## Optional
+
+- [Source code](https://github.com/fedeclavero/tiendanube-mcp/tree/main/src): TypeScript, declarative tool definitions in src/tools.
+- [Website](https://fedeclavero.github.io/tiendanube-mcp/)

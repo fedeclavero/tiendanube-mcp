@@ -1,0 +1,72 @@
+{
+  "name": "@fedeclavero/tiendanube-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Tiendanube / Nuvemshop: let Claude, Codex, OpenCode, Cursor and other AI agents manage products, stock, orders, customers, coupons and more through the official API (191 tools, read-only mode, rate-limit aware).",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "tiendanube-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "npm run build && node dist/selftest.js",
+    "prepare": "tsc",
+    "check": "node dist/index.js --check",
+    "docs": "npm run build && node scripts/gen-tools-doc.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "express": "^5.3.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "files": [
+    "dist",
+    "!dist/selftest.*",
+    "README.md",
+    "README.es.md",
+    "LICENSE",
+    "guides",
+    "llms.txt"
+  ],
+  "keywords": [
+    "tiendanube",
+    "nuvemshop",
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "ecommerce",
+    "claude",
+    "claude-code",
+    "codex",
+    "opencode",
+    "cursor",
+    "ai-agent",
+    "llm",
+    "argentina",
+    "latam",
+    "tienda-nube",
+    "api"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fedeclavero/tiendanube-mcp.git"
+  },
+  "homepage": "https://fedeclavero.github.io/tiendanube-mcp/",
+  "bugs": {
+    "url": "https://github.com/fedeclavero/tiendanube-mcp/issues"
+  },
+  "author": "fedeclavero"
+}
