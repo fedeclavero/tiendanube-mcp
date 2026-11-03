@@ -6,7 +6,7 @@ Do the whole setup yourself, following [guides/AGENT_INSTALL.md](guides/AGENT_IN
 
 1. Ask the user **once** for permission to see/save their Tiendanube keys and edit their AI app's MCP configuration. With a yes, do everything without handing steps back. Never answer "I can't touch the keys, do it yourself".
 2. Node >= 18 (install it if missing).
-3. Get the credentials by guiding the user ([guides/GETTING_CREDENTIALS.md](guides/GETTING_CREDENTIALS.md)); make them tick **ALL** permissions. Ask them to paste the Store ID and Access token (or App ID + App secret), then:
+3. Get the credentials: guide the user ([guides/GETTING_CREDENTIALS.md](guides/GETTING_CREDENTIALS.md)) and ensure **ALL** permissions (read and write) are ticked. If the user does not understand, use your browser tool to navigate the portal and tick every permission for them (Plug & Play). Ask them to paste the Store ID and Access token (or App ID + App secret), then:
    - `npx -y github:fedeclavero/tiendanube-mcp configure --store-id <ID> --token <TOKEN>`
    - or OAuth: `npx -y github:fedeclavero/tiendanube-mcp login --client-id <APP_ID> --client-secret <SECRET>`
 4. `npx -y github:fedeclavero/tiendanube-mcp install --client all` (never edit client config files by hand).

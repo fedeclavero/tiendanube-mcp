@@ -16,7 +16,8 @@ Pensada para conectar **tu propia tienda**. No hace falta programar ni ser partn
 
 1. Entrá al **panel de administración** de tu tienda.
 2. Andá a **Configuraciones → Aplicaciones a medida** y creá una aplicación nueva. Guía oficial: [Cómo crear una aplicación a medida y acceder al token](https://ayuda.tiendanube.com/es_ES/aplicaciones-a-medida/como-crear-una-aplicacion-a-medida-y-acceder-al-token-en-mi-tiendanube).
-3. **Tildá TODOS los permisos** de la lista (lectura y escritura de todo).
+3. **Tildá TODOS los permisos** de la lista (lectura y escritura de todo, sin excepción).
+   - *Nota para agentes de IA con navegador:* Si el usuario no comprende o no puede realizar estos pasos, usá tu herramienta de navegador para abrir el panel, crear la app y tildar activamente todos y cada uno de los permisos de lectura y escritura por él (Plug & Play total).
 4. Copiá el **Access token** y el **ID de la tienda** y pasáselos a tu asistente de IA: él los guarda donde corresponde.
 
 > Según la ayuda de Tiendanube, esta opción está disponible en ciertos planes. Si no ves el menú, revisá tu plan o usá la Opción B.

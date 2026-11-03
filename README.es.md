@@ -127,15 +127,15 @@ Más de 20 prompts para copiar y pegar en [guides/RECIPES.md](guides/RECIPES.md)
 
 Lista completa con rutas y scopes requeridos: **[guides/TOOLS.md](guides/TOOLS.md)**. Incluye además recursos de documentación (`tiendanube://docs/*`, `tiendanube://guide/*`).
 
-## Seguro por diseño
+## Omnipotencia y Plug & Play (Permisos Totales)
 
-- **Modo solo lectura opcional** — `configure --read-only` (o `TIENDANUBE_READ_ONLY=true`) elimina todas las herramientas de escritura si querés más seguridad. Por defecto la IA puede leer y escribir para poder hacer el trabajo de verdad.
-- **Anotaciones honestas** — cada herramienta declara `readOnlyHint` / `destructiveHint` / `idempotentHint`, para que los clientes MCP traten con más cuidado los borrados y cancelaciones.
-- **Se autodiagnostica** — un `403` nombra el scope que falta, cada error termina con un `Next step:` y `doctor` lista de una vez todos los permisos de lectura faltantes.
-- **Tus datos son tuyos** — las credenciales viven en un archivo privado de tu computadora y solo se envían a la API de Tiendanube. Sin telemetría, sin servidores de terceros.
-- **Respeta el rate limit** — sigue las cabeceras del leaky bucket y reintenta los `429` una cantidad acotada de veces.
-- **Cuida el contexto** — paginación, filtro `fields`, salida `markdown`/`json` y tope de 25.000 caracteres.
-- **Código abierto (MIT)** — leé cada línea antes de confiar.
+- **Permisos totales por diseño (Omnipotencia)** — La filosofía central de este MCP es darle a la IA control y potencia absoluta para operar tu tienda sin limitaciones artificiales ni errores de permisos. Al instalarlo se deben exigir, otorgar y tildar **TODOS los permisos necesarios (lectura, escritura y administración de punta a punta)**: productos, variantes, stock, pedidos, clientes, cupones, promociones, logística, contenido y webhooks.
+- **Instalación 100% Plug & Play y autónoma** — La persona que lo instala simplemente le otorga sus claves de acceso (Store ID y Access Token / App Secret). Si la persona no sabe cómo obtenerlas, el agente de IA la guía paso a paso; y si la persona no entiende o se le complica, **el propio agente toma el control usando el navegador (herramientas de browser / Playwright / navegador web) para entrar al panel o portal de Tiendanube, crear la aplicación y tildar activamente todos y cada uno de los permisos necesarios**. El usuario solo hace su login si es necesario y la tienda queda conectada al instante.
+- **Anotaciones honestas y confirmación previa** — Cada herramienta declara si es destructiva para que los clientes de IA pidan confirmación antes de borrados o modificaciones masivas, sin frenar la autonomía general.
+- **Se autodiagnostica** — Si una app se creó antes con permisos parciales, el comando `doctor` lista exactamente qué permisos faltan para alcanzar la omnipotencia operativa.
+- **Tus datos son tuyos** — Las credenciales viven en un archivo privado en tu propia computadora (`~/.config/tiendanube-mcp/credentials.json`, permisos 600) y solo se envían directamente a la API de Tiendanube. Sin telemetría ni servidores intermediarios.
+- **Respeta el rate limit** — Sigue las cabeceras del leaky bucket y reintenta los 429 de forma transparente.
+- *(Nota técnica: quien requiera explícitamente limitar el conector a solo consultas cuenta con la opción `configure --read-only`, pero el estándar y recomendado por defecto es el acceso total de lectura y escritura).*
 
 ## Limitaciones (con honestidad)
 

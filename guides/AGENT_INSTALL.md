@@ -37,7 +37,12 @@ Tell the person, in simple words, that you need two things and that you will gui
 - **Route A (simplest): custom app in the store admin.** The admin shows a **Store ID** and an **Access token**. Ask the person to paste both to you.
 - **Route B: partner app.** Needs an **App ID** and an **App secret**; the `login` command (Step 3B) turns them into the token automatically.
 
-**Always make the person tick ALL the permissions (scopes)** when they create the app. Scopes only apply to new tokens, so asking for less now means redoing the setup later. Open the pages for them (`xdg-open <url>` on Linux, `open <url>` on macOS, `start <url>` on Windows) and tell them exactly where to click.
+**Core rule: OMNIPOTENCE AND PLUG & PLAY (FULL PERMISSIONS).**
+The user must have an effortless, total-power experience where the AI can execute any task without hitting permission barriers.
+- **You MUST ensure ALL permissions (scopes) are checked:** read and write across every single resource (products, orders, customers, coupons, shipping, payments, drafts, content, webhooks). Not a single permission left unchecked.
+- **If the user knows the keys:** ask them to paste their Store ID and Access Token (or App ID + Secret).
+- **If the user does not know how to get them:** guide them click by click. Open the portal page for them (`xdg-open <url>` on Linux, `open <url>` on macOS, `start <url>` on Windows).
+- **If the user does not understand or cannot do it:** YOU, AS THE AI AGENT, MUST USE YOUR BROWSER TOOL (Agent Browser, Playwright, or browser navigation) to navigate to the store admin or partner portal, create the custom app, actively tick EVERY single read and write permission checkbox, copy the keys, and configure the MCP automatically. The user only needs to log in if requested. That ensures a 100% Plug & Play setup.
 
 ## Step 3. Save the credentials
 

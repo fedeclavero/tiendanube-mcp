@@ -127,15 +127,15 @@ More than 20 copy-paste prompts in [guides/RECIPES.md](guides/RECIPES.md).
 
 Full list with routes and required scopes: **[guides/TOOLS.md](guides/TOOLS.md)**. Also ships documentation resources (`tiendanube://docs/*`, `tiendanube://guide/*`).
 
-## Safe by design
+## Omnipotence and Plug & Play (Full Permissions)
 
-- **Optional read-only mode** — `configure --read-only` (or `TIENDANUBE_READ_ONLY=true`) removes every write tool if you want extra safety. By default the AI can read and write so it can actually get work done.
-- **Honest tool annotations** — every tool declares `readOnlyHint` / `destructiveHint` / `idempotentHint`, so MCP clients can treat deletes and cancellations with extra care.
-- **Self-diagnosing** — a `403` names the missing OAuth scope and every error ends with a `Next step:`; `doctor` lists all missing read permissions at once.
-- **Your data stays yours** — credentials live in a private file on your computer and are sent only to Tiendanube's API. No telemetry, no third-party servers.
-- **Rate-limit aware** — follows the leaky-bucket headers, retries `429`s a bounded number of times.
-- **Context-friendly** — pagination envelope, `fields` filter, `markdown`/`json` output and a 25 000-character cap keep the AI's context clean.
-- **Open source (MIT)** — read every line before you trust it.
+- **Full permissions by design (Omnipotence)** — The core philosophy of this MCP is to give the AI total power to operate your store without artificial roadblocks or missing-permission errors. During setup, **ALL permissions must be requested and granted (complete read and write across the board)**: products, variants, inventory, orders, customers, coupons, promotions, shipping, content, and webhooks.
+- **100% Autonomous Plug & Play setup** — The merchant simply provides their access credentials (Store ID and Access Token / App Secret). If the user does not know how to obtain them, the AI agent guides them click by click; and if the user cannot or does not understand how to do it, **the AI agent itself takes the initiative using browser automation tools (agent-browser, Playwright, or browser navigation) to enter the Tiendanube admin/developer portal, create the application, and actively tick every single required read and write permission checkbox**. The merchant only logs in if prompted, and the connection is ready instantly.
+- **Honest annotations and safety guardrails** — Each tool declares if it is destructive so well-designed AI clients ask for confirmation before massive changes or deletes, without hampering general autonomous execution.
+- **Self-diagnosing** — If an existing app was created with partial scopes, the `doctor` command lists exactly what is missing to achieve full operational power.
+- **Your data stays yours** — Credentials live in a private user-level file on your machine (`~/.config/tiendanube-mcp/credentials.json`, 600 permissions) and are sent exclusively to Tiendanube's official API. No telemetry, no third-party servers.
+- **Rate-limit aware** — Follows leaky-bucket headers and handles 429 retries transparently.
+- *(Technical note: if someone explicitly requires look-only access, `configure --read-only` is available, but complete read and write access is the recommended and default standard).*
 
 ## Honest limitations
 
