@@ -28,6 +28,8 @@ Missing or older? Offer to install it, then do it:
 | macOS | `brew install node` (or the installer from <https://nodejs.org>) |
 | Linux | your package manager (`apt install nodejs npm`) or <https://nodejs.org> |
 
+**npm 12 or newer refuses to download packages from GitHub by default** (`EALLOWGIT: Fetching packages of type "git" have been disabled`). Check with `npm --version`. If you see that error, run every `npx` command of this guide with the variable `npm_config_allow_git=all` (Linux/macOS: `npm_config_allow_git=all npx -y github:fedeclavero/tiendanube-mcp ...`; PowerShell: `$env:npm_config_allow_git="all"` first). To make AI apps able to launch the connector, also make it permanent with `npm config set allow-git all`.
+
 ## Step 2. Get the credentials
 
 Tell the person, in simple words, that you need two things and that you will guide them click by click. Follow [GETTING_CREDENTIALS.md](GETTING_CREDENTIALS.md). Choose the route:

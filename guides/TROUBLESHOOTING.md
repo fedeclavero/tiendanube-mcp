@@ -14,6 +14,7 @@
 | `422 Unprocessable Entity` | Invalid field values | Read the field details in the error; e.g. i18n fields must be `{"es": "…"}` |
 | `429 Too Many Requests` | Rate limit (40 burst, 2 req/s) | Retries automatically; prefer batch tools (`tiendanube_products_batch_stock_price`) |
 | Client says *"failed to start"* / time-out the first time | First `npx` run downloads and builds (~30 s) | Run `npx -y github:fedeclavero/tiendanube-mcp --version` once in a terminal; raise the client's startup timeout (Codex `startup_timeout_sec`, Gemini `timeout`) |
+| `EALLOWGIT` / `Fetching packages of type "git" have been disabled` | npm 12+ blocks GitHub packages by default | Run with `npm_config_allow_git=all` (verified), and make it permanent with `npm config set allow-git all` so AI apps can start the connector |
 | `npx: command not found` / Node too old | Node.js missing or < 18 | Install Node.js LTS from <https://nodejs.org> |
 | `ERR_MODULE_NOT_FOUND` / build errors after `npx github:` | Interrupted install / stale npx cache | `npx clear-npx-cache` or delete `~/.npm/_npx`, then retry |
 | Windows: an app can't launch `npx` | Needs a shell wrapper | `install` writes `cmd /c npx ...` automatically; re-run `install --client <name>` |
