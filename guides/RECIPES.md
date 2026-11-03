@@ -1,8 +1,8 @@
 # Prompt recipes / Recetas de prompts
 
-Copy, paste, adapt. Each recipe says which tools the AI will reach for. **Writes** are marked ✍️ — use them after you've tried read-only mode, and ask the AI to *show you the plan and wait for your OK* before it changes anything.
+Copy, paste, adapt. Each recipe says which tools the AI will reach for. **Writes** are marked ✍️ — for big changes ask the AI to *show you the plan and wait for your OK* before it changes anything. The AI can also read these step by step with the `tiendanube_get_recipe` tool.
 
-Copiá, pegá y adaptá. Cada receta indica qué herramientas va a usar la IA. Las **escrituras** están marcadas con ✍️: usalas después de probar el modo solo lectura y pedile a la IA que *te muestre el plan y espere tu OK* antes de cambiar nada.
+Copiá, pegá y adaptá. Cada receta indica qué herramientas va a usar la IA. Las **escrituras** están marcadas con ✍️: para cambios grandes pedile a la IA que *te muestre el plan y espere tu OK* antes de cambiar nada. La IA también puede leer estas recetas paso a paso con la herramienta `tiendanube_get_recipe`.
 
 ## Know your store / Conocé tu tienda
 
@@ -43,6 +43,14 @@ Copiá, pegá y adaptá. Cada receta indica qué herramientas va a usar la IA. L
 23. ✍️ **"Register a webhook for `order/paid` pointing to https://my-api.example.com/hooks."** → `tiendanube_webhooks_create`
 24. **"List all my webhooks and tell me which ones point to a domain I don't recognize."** → `tiendanube_webhooks_list`
 25. ✍️ **"Add the metafield `erp.id` = ABC on product 123."** → `tiendanube_metafields_create`
+
+## Combos & images / Combos e imágenes
+
+26. ✍️ **"Make two combos with products I already sell, with a nice image for each."** / *"Armame dos combos con productos que ya vendo, con una imagen linda para cada uno."* → `tiendanube_products_list`, your AI's own image tool, `tiendanube_create_combo` (`image_files`). Combos are created as **drafts**; the AI asks before publishing.
+27. ✍️ **"Create a 'Verano' combo with product 111 and two units of product 222, 10% off."** → `tiendanube_create_combo` (`discount_percent: 10`)
+28. ✍️ **"Upload this picture as the main image of product 123: /path/to/photo.png."** → `tiendanube_product_image_add_from_file`
+
+> The Tiendanube API can only *read* native Kits, and a regular combo product does not deduct the components' stock when it sells. The tool sets the combo stock to the scarcest component and warns about this; create a native Kit in the admin panel if you need automatic deduction.
 
 ## Pro tips / Consejos
 

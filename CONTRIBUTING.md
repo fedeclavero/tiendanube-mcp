@@ -4,7 +4,7 @@ Thanks for helping Tiendanube merchants and developers! Bug reports, endpoint co
 
 1. Fork and clone, then `npm install` (this also builds).
 2. Make your change. Tools live in `src/tools/<domain>.ts` as declarative `EndpointDef`s (see [AGENTS.md](AGENTS.md)).
-3. `npm test` must pass. Add or extend a case in `src/selftest.ts` for new behaviour.
+3. `npm test` must pass. Add or extend a case in `src/selftest.ts` (tools) or `src/clienttest.ts` (installer, credentials, OAuth) for new behaviour. Tests are offline and use temp dirs; never use real credentials.
 4. `npm run docs` to regenerate `guides/TOOLS.md`; keep `README.md` and `README.es.md` in sync.
 5. Open a pull request describing what changed and which official API page it follows.
 

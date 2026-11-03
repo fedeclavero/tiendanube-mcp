@@ -1,3 +1,4 @@
+import { RECIPES, SERVER_INSTRUCTIONS, recipeText, startHereText } from "./guide.js";
 const SCOPES_AND_LIMITS = `# Tiendanube API: scopes and limits
 
 ## Base URLs
@@ -56,6 +57,9 @@ Reference documentation:
 - https://tiendanube.dev/api/resources/2025-03/checkout-sdk
 `;
 export function registerResources(server) {
+    // The same guidance as tiendanube_start_here / tiendanube_get_recipe, for clients that read resources.
+    server.registerResource("start-here", "tiendanube://guide/start-here", { title: "Start here: how to use this store MCP", description: "Task -> tool map, golden rules and recipes. Read it before touching the store.", mimeType: "text/markdown" }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: "text/markdown", text: `${SERVER_INSTRUCTIONS}\n\n${startHereText()}` }] }));
+    server.registerResource("recipes", "tiendanube://guide/recipes", { title: "Step-by-step recipes", description: "Exact tools and arguments for combos, price changes, stock, orders, coupons, SEO and fixing access", mimeType: "text/markdown" }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: "text/markdown", text: RECIPES.map(recipeText).join("\n\n---\n\n") }] }));
     server.registerResource("scopes-and-limits", "tiendanube://docs/scopes-and-limits", { title: "Tiendanube scopes, limits and data-model rules", description: "OAuth scope matrix, API versions, rate limits, pagination and modeling rules", mimeType: "text/markdown" }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: "text/markdown", text: SCOPES_AND_LIMITS }] }));
     server.registerResource("checkout-sdk", "tiendanube://docs/checkout-sdk", { title: "Checkout and Checkout SDK integration guide", description: "How callbacks, scripts and the Checkout SDK fit together", mimeType: "text/markdown" }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: "text/markdown", text: CHECKOUT_SDK }] }));
 }

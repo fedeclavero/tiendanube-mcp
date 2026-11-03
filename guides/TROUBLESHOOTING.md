@@ -2,7 +2,9 @@
 
 | Symptom / Síntoma | Cause / Causa | Fix / Solución |
 | --- | --- | --- |
-| `FAIL: missing environment variable(s)` | Env vars not passed to the server | Put `TIENDANUBE_STORE_ID` and `TIENDANUBE_ACCESS_TOKEN` in the `env` block of your client config (not in your shell) |
+| `No Tiendanube credentials found` | Keys were never saved | Run `npx -y github:fedeclavero/tiendanube-mcp configure --store-id <ID> --token <TOKEN>`, then restart your AI app |
+| The connector does not show up in the AI app | App not restarted, or not registered | Fully close and reopen the app. Run `... clients` (is it `registered`?) and `... install --client <name>` |
+| The AI uses a browser instead of the tools | Weak model or client that ignores server instructions | Tell it: *"Use the tiendanube_* tools, never the browser. Start with tiendanube_start_here."* Check the connector is listed (`... clients`, then restart) |
 | `401 Unauthorized` | Wrong, rotated or revoked token, or wrong Store ID, or the app was uninstalled | Re-copy both values; check the token belongs to *that* store |
 | `400 Bad Request` on every call | Missing/invalid `User-Agent` | Set `TIENDANUBE_USER_AGENT="Name (email@domain.com)"` |
 | `402 Payment Required` | The store's Tiendanube plan is unpaid | Pay the plan; API access resumes |
@@ -14,8 +16,8 @@
 | Client says *"failed to start"* / time-out the first time | First `npx` run downloads and builds (~30 s) | Run `npx -y github:fedeclavero/tiendanube-mcp --version` once in a terminal; raise the client's startup timeout (Codex `startup_timeout_sec`, Gemini `timeout`) |
 | `npx: command not found` / Node too old | Node.js missing or < 18 | Install Node.js LTS from <https://nodejs.org> |
 | `ERR_MODULE_NOT_FOUND` / build errors after `npx github:` | Interrupted install / stale npx cache | `npx clear-npx-cache` or delete `~/.npm/_npx`, then retry |
-| Windows: Claude Desktop can't launch `npx` | Needs a shell wrapper | Use `"command": "cmd", "args": ["/c", "npx", "-y", "github:fedeclavero/tiendanube-mcp"]` |
-| Tools missing (no write tools) | `TIENDANUBE_READ_ONLY=true` | Remove it (or set `false`) and restart the client |
+| Windows: an app can't launch `npx` | Needs a shell wrapper | `install` writes `cmd /c npx ...` automatically; re-run `install --client <name>` |
+| Tools missing (no write tools) | Read-only mode is on | Run `... configure --read-write` (and remove `TIENDANUBE_READ_ONLY` from the client config if present), then restart |
 | Brazil store returns 401/404 | Wrong API host | Set `TIENDANUBE_API_DOMAIN=https://api.nuvemshop.com.br` |
 | Order list stops at page N | Hard cap `page * per_page <= 10000` | Filter by `created_at_min`/`created_at_max` or use `since_id` |
 | Output ends with "[Output truncated…]" | 25 000-character guard | Use `fields`, smaller `per_page`, or more filters |
@@ -23,12 +25,10 @@
 ## Diagnose in 30 seconds
 
 ```bash
-TIENDANUBE_STORE_ID=123456 TIENDANUBE_ACCESS_TOKEN=xxxx \
-TIENDANUBE_USER_AGENT="MyStore (me@example.com)" \
-npx -y github:fedeclavero/tiendanube-mcp --check
+npx -y github:fedeclavero/tiendanube-mcp doctor
 ```
 
-It calls `GET /store` and prints the store name, plan, country, currency and languages — or a precise error.
+It shows where the credentials come from (never the secret), the store name, plan, languages, the mode, and which **read permissions are missing**, and ends with `NEXT STEP:` lines. Add `--json` for machines. An AI agent can run it and follow those steps itself (the same check exists as the `tiendanube_doctor` tool).
 
 ## Still stuck?
 

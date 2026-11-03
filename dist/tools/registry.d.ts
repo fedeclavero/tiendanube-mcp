@@ -42,6 +42,8 @@ export declare function buildRequest(def: EndpointDef, input: Input): {
     query: Record<string, string | number | boolean>;
     body: unknown;
 };
+/** Build the model-facing description: an imperative lead-in, the details, and an exact example. */
+export declare function describeEndpoint(def: EndpointDef): string;
 export declare function registerEndpoint(server: McpServer, client: TiendanubeClient, def: EndpointDef): void;
 export interface ToolModule {
     name: string;

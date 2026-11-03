@@ -47,5 +47,22 @@ export declare class TiendanubeClient {
     private resetDelay;
     private trackRateLimit;
 }
-/** Build a client from environment variables, or throw with a helpful message. */
+/** Where the effective credentials came from (never contains the secret itself). */
+export interface ResolvedCredentials {
+    storeId?: string;
+    accessToken?: string;
+    userAgent?: string;
+    apiDomain?: string;
+    apiVersion?: string;
+    readOnly: boolean;
+    scopes?: string[];
+    source: {
+        storeId: "env" | "file" | "none";
+        accessToken: "env" | "file" | "none";
+    };
+}
+/** Environment variables win; the user-level credentials file (see config/store.ts) fills the gaps. */
+export declare function resolveCredentials(env?: NodeJS.ProcessEnv): ResolvedCredentials;
+export declare const MISSING_CREDENTIALS_HELP: string;
+/** Build a client from env vars / the saved credentials file, or throw with an actionable message. */
 export declare function clientFromEnv(env?: NodeJS.ProcessEnv): TiendanubeClient;

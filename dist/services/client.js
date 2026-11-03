@@ -1,4 +1,5 @@
 import { DEFAULT_API_DOMAIN, DEFAULT_API_VERSION, DEFAULT_USER_AGENT, MAX_RATE_LIMIT_RETRIES, REQUEST_TIMEOUT_MS, } from "../constants.js";
+import { loadStored } from "../config/store.js";
 /** Error thrown for any non-2xx response, carrying the parsed payload. */
 export class TiendanubeApiError extends Error {
     status;
@@ -99,19 +100,38 @@ export class TiendanubeClient {
         }
     }
 }
-/** Build a client from environment variables, or throw with a helpful message. */
-export function clientFromEnv(env = process.env) {
-    const storeId = env.TIENDANUBE_STORE_ID;
-    const accessToken = env.TIENDANUBE_ACCESS_TOKEN;
-    if (!storeId || !accessToken) {
-        throw new Error("TIENDANUBE_STORE_ID and TIENDANUBE_ACCESS_TOKEN environment variables are required.");
-    }
-    return new TiendanubeClient({
+/** Environment variables win; the user-level credentials file (see config/store.ts) fills the gaps. */
+export function resolveCredentials(env = process.env) {
+    const stored = loadStored(env);
+    const pick = (fromEnv, fromFile) => fromEnv ? [fromEnv, "env"] : fromFile ? [fromFile, "file"] : [undefined, "none"];
+    const [storeId, storeSource] = pick(env.TIENDANUBE_STORE_ID, stored.storeId);
+    const [accessToken, tokenSource] = pick(env.TIENDANUBE_ACCESS_TOKEN, stored.accessToken);
+    const readOnlyEnv = env.TIENDANUBE_READ_ONLY;
+    return {
         storeId,
         accessToken,
-        userAgent: env.TIENDANUBE_USER_AGENT,
-        apiDomain: env.TIENDANUBE_API_DOMAIN,
-        defaultVersion: env.TIENDANUBE_API_VERSION,
+        userAgent: env.TIENDANUBE_USER_AGENT || stored.userAgent,
+        apiDomain: env.TIENDANUBE_API_DOMAIN || stored.apiDomain,
+        apiVersion: env.TIENDANUBE_API_VERSION,
+        readOnly: readOnlyEnv !== undefined && readOnlyEnv !== "" ? /^(1|true|yes)$/i.test(readOnlyEnv) : stored.readOnly ?? false,
+        scopes: stored.scopes,
+        source: { storeId: storeSource, accessToken: tokenSource },
+    };
+}
+export const MISSING_CREDENTIALS_HELP = "No Tiendanube credentials found. Next step (do it yourself, do not hand this back to the user): ask the user for their Store ID and access token " +
+    "(see guides/GETTING_CREDENTIALS.md) and run: npx -y github:fedeclavero/tiendanube-mcp configure --store-id <ID> --token <TOKEN>  " +
+    "then ask the user to restart their AI client.";
+/** Build a client from env vars / the saved credentials file, or throw with an actionable message. */
+export function clientFromEnv(env = process.env) {
+    const creds = resolveCredentials(env);
+    if (!creds.storeId || !creds.accessToken)
+        throw new Error(MISSING_CREDENTIALS_HELP);
+    return new TiendanubeClient({
+        storeId: creds.storeId,
+        accessToken: creds.accessToken,
+        userAgent: creds.userAgent,
+        apiDomain: creds.apiDomain,
+        defaultVersion: creds.apiVersion,
     });
 }
 //# sourceMappingURL=client.js.map

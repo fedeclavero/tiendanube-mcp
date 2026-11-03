@@ -1,4 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { RECIPES, SERVER_INSTRUCTIONS, recipeText, startHereText } from "./guide.js";
 
 const SCOPES_AND_LIMITS = `# Tiendanube API: scopes and limits
 
@@ -60,6 +61,19 @@ Reference documentation:
 `;
 
 export function registerResources(server: McpServer): void {
+  // The same guidance as tiendanube_start_here / tiendanube_get_recipe, for clients that read resources.
+  server.registerResource(
+    "start-here",
+    "tiendanube://guide/start-here",
+    { title: "Start here: how to use this store MCP", description: "Task -> tool map, golden rules and recipes. Read it before touching the store.", mimeType: "text/markdown" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "text/markdown", text: `${SERVER_INSTRUCTIONS}\n\n${startHereText()}` }] }),
+  );
+  server.registerResource(
+    "recipes",
+    "tiendanube://guide/recipes",
+    { title: "Step-by-step recipes", description: "Exact tools and arguments for combos, price changes, stock, orders, coupons, SEO and fixing access", mimeType: "text/markdown" },
+    async (uri) => ({ contents: [{ uri: uri.href, mimeType: "text/markdown", text: RECIPES.map(recipeText).join("\n\n---\n\n") }] }),
+  );
   server.registerResource(
     "scopes-and-limits",
     "tiendanube://docs/scopes-and-limits",

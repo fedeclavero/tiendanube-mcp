@@ -1,7 +1,7 @@
 {
   "name": "@fedeclavero/tiendanube-mcp",
-  "version": "1.0.0",
-  "description": "MCP server for Tiendanube / Nuvemshop: let Claude, Codex, OpenCode, Cursor and other AI agents manage products, stock, orders, customers, coupons and more through the official API (191 tools, read-only mode, rate-limit aware).",
+  "version": "1.1.0",
+  "description": "MCP server for Tiendanube / Nuvemshop that AI agents can install and configure by themselves (Claude Code, Codex, Gemini CLI, Cursor, Antigravity, VS Code, OpenCode...): 198 tools, guided workflows, OAuth login, doctor, rate-limit aware.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -12,10 +12,11 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "clean": "rm -rf dist",
-    "test": "npm run build && node dist/selftest.js",
+    "test": "npm run build && node dist/selftest.js && node dist/clienttest.js",
     "prepare": "tsc",
-    "check": "node dist/index.js --check",
-    "docs": "npm run build && node scripts/gen-tools-doc.mjs"
+    "docs": "npm run build && node scripts/gen-tools-doc.mjs",
+    "doctor": "node dist/index.js doctor",
+    "check": "node dist/index.js doctor"
   },
   "engines": {
     "node": ">=18"
@@ -35,6 +36,7 @@
   "files": [
     "dist",
     "!dist/selftest.*",
+    "!dist/clienttest.*",
     "README.md",
     "README.es.md",
     "LICENSE",
@@ -58,7 +60,10 @@
     "argentina",
     "latam",
     "tienda-nube",
-    "api"
+    "api",
+    "antigravity",
+    "gemini-cli",
+    "chatgpt"
   ],
   "repository": {
     "type": "git",

@@ -5,8 +5,18 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import assert from "node:assert/strict";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { createServer } from "./server.js";
 import { TiendanubeClient } from "./services/client.js";
+import { CUSTOM_TOOLS } from "./tools/custom_meta.js";
+import { EXAMPLES } from "./tools/examples.js";
+// Hermetic: never read the developer's real credentials file or environment.
+process.env.TIENDANUBE_MCP_HOME = mkdtempSync(join(tmpdir(), "tn-selftest-"));
+for (const k of Object.keys(process.env))
+    if (k.startsWith("TIENDANUBE_") && k !== "TIENDANUBE_MCP_HOME")
+        delete process.env[k];
 const calls = [];
 let respond = () => new Response("{}", { status: 200 });
 globalThis.fetch = (async (input, init) => {
@@ -16,7 +26,10 @@ globalThis.fetch = (async (input, init) => {
 });
 const json = (body, status = 200, headers = {}) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", ...headers } });
 async function connect(readOnly = false) {
-    const server = createServer(new TiendanubeClient({ storeId: "42", accessToken: "tok", userAgent: "Test (t@t.com)" }), { readOnly });
+    const server = createServer(new TiendanubeClient({ storeId: "42", accessToken: "tok", userAgent: "Test (t@t.com)" }), {
+        readOnly,
+        credentials: () => ({ storeId: "42", accessToken: "tok", readOnly, source: { storeId: "env", accessToken: "env" } }),
+    });
     const [a, b] = InMemoryTransport.createLinkedPair();
     const client = new Client({ name: "test", version: "1" });
     await Promise.all([server.connect(a), client.connect(b)]);
@@ -26,10 +39,17 @@ const text = (r) => r.content[0].text;
 const client = await connect();
 const { tools } = await client.listTools();
 console.log(`tools registered: ${tools.length}`);
-assert.ok(tools.length >= 190, "expected full API coverage");
+assert.equal(tools.length, 191 + CUSTOM_TOOLS.length, "expected full API coverage plus the guide/workflow tools");
 assert.ok(tools.every((t) => t.name.startsWith("tiendanube_")));
 assert.ok(tools.every((t) => t.annotations && typeof t.annotations.readOnlyHint === "boolean"));
-assert.ok(tools.filter((t) => t.name !== "tiendanube_oauth_exchange_code").every((t) => t.description?.includes("Required scope")));
+const custom = new Set([...CUSTOM_TOOLS.map((t) => t.name), "tiendanube_oauth_exchange_code"]);
+assert.ok(tools.filter((t) => !custom.has(t.name)).every((t) => t.description?.includes("Required scope")));
+assert.ok(tools.filter((t) => !custom.has(t.name)).every((t) => t.description.startsWith("Use this tool, not the browser")), "every API tool must lead with the anti-browser instruction");
+assert.deepEqual(tools.slice(0, 5).map((t) => t.name), ["tiendanube_start_here", "tiendanube_find_tool", "tiendanube_get_recipe", "tiendanube_doctor", "tiendanube_api_request"], "entry-point tools must be listed first");
+for (const t of CUSTOM_TOOLS)
+    assert.ok(tools.find((x) => x.name === t.name), `missing custom tool ${t.name}`);
+assert.match(client.getInstructions() ?? "", /NEVER use a browser/);
+assert.match(client.getInstructions() ?? "", /tiendanube_start_here/);
 for (const n of ["tiendanube_products_list", "tiendanube_orders_cancel", "tiendanube_variants_update_stock", "tiendanube_oauth_exchange_code", "tiendanube_webhooks_create"]) {
     assert.ok(tools.find((t) => t.name === n), `missing ${n}`);
 }
@@ -37,7 +57,7 @@ assert.equal(tools.find((t) => t.name === "tiendanube_orders_cancel").annotation
 assert.equal(tools.find((t) => t.name === "tiendanube_products_list").annotations.readOnlyHint, true);
 // resources
 const res = await client.listResources();
-assert.deepEqual(res.resources.map((r) => r.uri).sort(), ["tiendanube://docs/checkout-sdk", "tiendanube://docs/scopes-and-limits"]);
+assert.deepEqual(res.resources.map((r) => r.uri).sort(), ["tiendanube://docs/checkout-sdk", "tiendanube://docs/scopes-and-limits", "tiendanube://guide/recipes", "tiendanube://guide/start-here"]);
 assert.match(String((await client.readResource({ uri: "tiendanube://docs/scopes-and-limits" })).contents[0].text), /read_products/);
 // headers + url + query + pagination
 respond = () => json([{ id: 1, name: { es: "Remera" } }], 200, { "x-total-count": "45", "x-rate-limit-remaining": "30" });
@@ -123,9 +143,149 @@ respond = () => json(Array.from({ length: 400 }, (_, i) => ({ id: i, description
 r = await client.callTool({ name: "tiendanube_products_list", arguments: { per_page: 200 } });
 assert.ok(text(r).length <= 26000);
 assert.equal(r.structuredContent.truncated, true);
+// ---- examples in descriptions must be valid against the real input schema
+respond = () => json({});
+for (const [name, args] of Object.entries(EXAMPLES)) {
+    const r = await client.callTool({ name, arguments: args }).catch((e) => ({ isError: true, content: [{ text: `THROWN ${String(e)}` }] }));
+    assert.ok(!/THROWN|Invalid|invalid_type|validation/i.test(JSON.stringify(r.content ?? "")), `example for ${name} is invalid: ${JSON.stringify(r.content)}`);
+}
+assert.match(tools.find((t) => t.name === "tiendanube_products_list").description, /Example arguments: \{"q":"remera"/);
+// ---- guide tools
+r = await client.callTool({ name: "tiendanube_start_here", arguments: {} });
+assert.match(text(r), /Do not open a browser/);
+assert.match(text(r), /tiendanube_create_combo/);
+r = await client.callTool({ name: "tiendanube_find_tool", arguments: { query: "quiero subir los precios de una categoría" } });
+assert.match(text(r), /tiendanube_products_batch_stock_price|tiendanube_categories_list|tiendanube_variants_update/);
+assert.match(text(r), /bulk-price/);
+r = await client.callTool({ name: "tiendanube_find_tool", arguments: { query: "armar combos de mis productos" } });
+assert.match(text(r), /tiendanube_create_combo/);
+assert.match(text(r), /combo/);
+r = await client.callTool({ name: "tiendanube_get_recipe", arguments: { id: "combo" } });
+assert.match(text(r), /tiendanube_create_combo/);
+r = await client.callTool({ name: "tiendanube_get_recipe", arguments: { query: "pedidos pagos sin enviar" } });
+assert.match(text(r), /orders-to-ship|financial_status/);
+r = await client.callTool({ name: "tiendanube_get_recipe", arguments: {} });
+assert.match(text(r), /fix-access/);
+// ---- every error ends with an actionable next step
+for (const [status, rx] of [[401, /tiendanube_doctor/], [403, /ALL permissions/], [404, /_list/], [409, /duplicated/], [422, /fix the fields/], [429, /batch/], [500, /retry/]]) {
+    respond = () => json({ description: "x" }, status);
+    r = await client.callTool({ name: "tiendanube_products_get", arguments: { id: 1 } });
+    assert.equal(r.isError, true);
+    assert.match(text(r), /Next step: /, `status ${status} lacks a next step`);
+    assert.match(text(r), rx, `status ${status} next step is wrong: ${text(r)}`);
+}
+// ---- generic api request: fixed origin, path validation, read-only guard
+respond = () => json([{ id: 1 }]);
+r = await client.callTool({ name: "tiendanube_api_request", arguments: { path: "/products", query: { per_page: 5 } } });
+c = calls.at(-1);
+assert.equal(c.url.origin, "https://api.tiendanube.com");
+assert.equal(c.url.pathname, "/2025-03/42/products");
+assert.equal(c.url.searchParams.get("per_page"), "5");
+for (const bad of ["products", "/../x", "/products?x=1", "//evil.com/x", "/2025-03/products", "https://evil.com/x", "/a\\b"]) {
+    const before = calls.length;
+    r = await client.callTool({ name: "tiendanube_api_request", arguments: { path: bad } });
+    assert.equal(r.isError, true, `path ${bad} should be rejected`);
+    assert.equal(calls.length, before, `rejected path ${bad} must not hit the network`);
+}
+await client.callTool({ name: "tiendanube_api_request", arguments: { method: "POST", path: "/products", body: { name: { es: "x" } } } });
+assert.equal(calls.at(-1).init.method, "POST");
+// ---- doctor: finds missing scopes in one pass
+respond = (call) => call.url.pathname.endsWith("/store") ? json({ id: 42, name: { es: "Mi Tienda" }, plan_name: "Pro", country: "AR", main_currency: "ARS", languages: ["es"] })
+    : /\/orders|\/customers/.test(call.url.pathname) ? json({ code: 403 }, 403)
+        : json([]);
+r = await client.callTool({ name: "tiendanube_doctor", arguments: {} });
+assert.equal(r.structuredContent.ok, false);
+assert.deepEqual([...r.structuredContent.missingReadScopes].sort().filter((s) => /orders|customers/.test(s)), ["read_customers", "read_orders"]);
+assert.equal(r.structuredContent.readScopes.read_products, "ok");
+assert.match(text(r), /NEXT STEP/);
+assert.match(text(r), /tick ALL permissions/);
+respond = () => json({ code: 401 }, 401);
+r = await client.callTool({ name: "tiendanube_doctor", arguments: { probe_scopes: false } });
+assert.equal(r.structuredContent.ok, false);
+assert.match(text(r), /configure --store-id/);
+// ---- image upload from a local file
+const dir = mkdtempSync(join(tmpdir(), "tn-img-"));
+const png = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.from("fake-png-body")]);
+writeFileSync(join(dir, "combo.png"), png);
+writeFileSync(join(dir, "secret.png"), "plain text that only pretends to be an image"); // looks like an image by name only
+respond = () => json({ id: 77, src: "https://cdn/x.png" }, 201);
+r = await client.callTool({ name: "tiendanube_product_image_add_from_file", arguments: { product_id: 9, file_path: join(dir, "combo.png"), position: 1, alt: { es: "Combo" } } });
+assert.notEqual(r.isError, true, text(r));
+c = calls.at(-1);
+assert.equal(c.init.method, "POST");
+assert.equal(c.url.pathname, "/2025-03/42/products/9/images");
+const sent = JSON.parse(c.init.body);
+assert.equal(sent.attachment, png.toString("base64"));
+assert.equal(sent.filename, "combo.png");
+assert.equal(sent.position, 1);
+const before = calls.length;
+r = await client.callTool({ name: "tiendanube_product_image_add_from_file", arguments: { product_id: 9, file_path: join(dir, "secret.png") } });
+assert.equal(r.isError, true);
+assert.match(text(r), /not a JPEG, PNG, GIF or WEBP/);
+r = await client.callTool({ name: "tiendanube_product_image_add_from_file", arguments: { product_id: 9, file_path: join(dir, "nope.png") } });
+assert.equal(r.isError, true);
+assert.equal(calls.length, before, "non-images and missing files must never reach the network");
+// ---- combo workflow
+const products = {
+    "111": { id: 111, name: { es: "Remera" }, images: [{ src: "https://cdn/r.jpg" }], variants: [{ id: 1111, price: "10000.00", promotional_price: null, stock_management: true, stock: 10, weight: "0.3", sku: "R" }] },
+    "222": { id: 222, name: { es: "Gorra" }, images: [{ src: "https://cdn/g.jpg" }], variants: [{ id: 2221, price: "4000.00", stock_management: true, stock: 7, weight: "0.2" }] },
+    "333": { id: 333, name: { es: "Zapatilla" }, images: [], variants: [{ id: 3331, price: "50000.00", values: [{ es: "40" }], stock: 1, stock_management: true }, { id: 3332, price: "50000.00", values: [{ es: "41" }], stock: 1, stock_management: true }] },
+};
+respond = (call) => {
+    const m = call.url.pathname.match(/\/products\/(\d+)$/);
+    if (call.url.pathname.endsWith("/store"))
+        return json({ languages: ["es"], main_language: "es" });
+    if (call.init.method === "GET" && m)
+        return json(products[m[1]]);
+    if (call.init.method === "POST" && call.url.pathname.endsWith("/products"))
+        return json({ id: 900, name: JSON.parse(call.init.body).name, published: false, handle: { es: "combo" } }, 201);
+    if (call.init.method === "POST" && call.url.pathname.endsWith("/images"))
+        return json({ id: 5, src: "https://cdn/c.png" }, 201);
+    return json({});
+};
+let postsBefore = calls.filter((x) => x.init.method === "POST").length;
+r = await client.callTool({ name: "tiendanube_create_combo", arguments: { name: "Combo Verano", components: [{ product_id: 111, quantity: 1 }, { product_id: 222, quantity: 2 }], discount_percent: 10, dry_run: true } });
+assert.notEqual(r.isError, true, text(r));
+assert.equal(calls.filter((x) => x.init.method === "POST").length, postsBefore, "dry_run must not write");
+assert.equal(r.structuredContent.price, "16200.00"); // (10000 + 2*4000) * 0.9
+assert.equal(r.structuredContent.stock, 3); // min(10/1, floor(7/2)=3)
+r = await client.callTool({ name: "tiendanube_create_combo", arguments: { name: "Combo Verano", components: [{ product_id: 111, quantity: 1 }, { product_id: 222, quantity: 2 }], discount_percent: 10, image_files: [join(dir, "combo.png")] } });
+assert.notEqual(r.isError, true, text(r));
+const create = calls.filter((x) => x.init.method === "POST" && x.url.pathname.endsWith("/products")).at(-1);
+const body = JSON.parse(create.init.body);
+assert.deepEqual(body.name, { es: "Combo Verano" });
+assert.equal(body.published, false, "combos are created as drafts");
+assert.equal(body.variants[0].price, "16200.00");
+assert.equal(body.variants[0].stock, 3);
+assert.equal(body.variants[0].weight, "0.7");
+assert.match(body.description.es, /1 x Remera/);
+assert.match(body.description.es, /2 x Gorra/);
+assert.equal(body.images, undefined, "uploaded files replace component photos");
+assert.equal(calls.at(-1).url.pathname, "/2025-03/42/products/900/images");
+assert.equal(r.structuredContent.images_uploaded, 1);
+assert.ok(r.structuredContent.warnings.some((w) => /does NOT deduct/.test(w)));
+assert.match(r.structuredContent.next_steps[0], /"published":true/);
+r = await client.callTool({ name: "tiendanube_create_combo", arguments: { name: "Combo", components: [{ product_id: 111 }, { product_id: 222 }], dry_run: true } });
+assert.deepEqual(JSON.parse(text(r).replace(/^DRY RUN \(nothing created\):\n/, "")).request_body.images.map((i) => i.src), ["https://cdn/r.jpg", "https://cdn/g.jpg"]);
+r = await client.callTool({ name: "tiendanube_create_combo", arguments: { name: "Combo", components: [{ product_id: 333 }, { product_id: 111 }] } });
+assert.equal(r.isError, true);
+assert.match(text(r), /variant_id is required/);
+assert.match(text(r), /3332/);
+r = await client.callTool({ name: "tiendanube_create_combo", arguments: { name: "Combo", components: [{ product_id: 333, variant_id: 3332 }, { product_id: 111 }], price: 55000, stock: 2, dry_run: true } });
+assert.equal(r.structuredContent.price, "55000.00");
+assert.equal(r.structuredContent.stock, 2);
 // read-only mode
 const ro = await connect(true);
 const roTools = (await ro.listTools()).tools;
-assert.ok(roTools.length > 50 && roTools.every((t) => t.annotations?.readOnlyHint === true));
+const roNames = new Set(roTools.map((t) => t.name));
+assert.ok(roTools.length > 50);
+for (const name of ["tiendanube_create_combo", "tiendanube_product_image_add_from_file", "tiendanube_oauth_exchange_code"])
+    assert.ok(!roNames.has(name), `${name} must not exist in read-only mode`);
+for (const name of ["tiendanube_start_here", "tiendanube_doctor", "tiendanube_find_tool"])
+    assert.ok(roNames.has(name), `${name} must exist in read-only mode`);
+assert.ok(roTools.filter((t) => t.name !== "tiendanube_api_request").every((t) => t.annotations?.readOnlyHint === true));
+r = await ro.callTool({ name: "tiendanube_api_request", arguments: { method: "DELETE", path: "/products/1" } });
+assert.equal(r.isError, true);
+assert.match(text(r), /read-only/);
 console.log("all self-tests passed");
 //# sourceMappingURL=selftest.js.map

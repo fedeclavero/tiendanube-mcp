@@ -5,6 +5,7 @@ import { Shape, fieldsParam, paginationShape, responseFormat } from "../schemas/
 import { HttpMethod, TiendanubeApiError, TiendanubeClient } from "../services/client.js";
 import { formatError } from "../services/errors.js";
 import { ListEnvelope, ResponseFormat, render } from "../services/format.js";
+import { EXAMPLES } from "./examples.js";
 
 type Input = Record<string, unknown>;
 
@@ -155,12 +156,17 @@ function buildEnvelope(
   };
 }
 
-export function registerEndpoint(server: McpServer, client: TiendanubeClient, def: EndpointDef): void {
-  const inputShape = buildInputShape(def);
+/** "Get one product" -> "get one product" (keeps acronyms such as "SKU" intact). */
+const lowerFirst = (text: string) => (/^[A-Z][a-z-]/.test(text) ? text.charAt(0).toLowerCase() + text.slice(1) : text);
+
+/** Build the model-facing description: an imperative lead-in, the details, and an exact example. */
+export function describeEndpoint(def: EndpointDef): string {
   const versionLabel = typeof def.version === "string" ? def.version : def.version ? "2025-03 (unstable if noted)" : "2025-03";
-  const description = [
-    def.description,
+  const example = EXAMPLES[def.name];
+  return [
+    `Use this tool, not the browser or the admin panel, to ${lowerFirst(def.description)}`,
     def.notes,
+    example ? `Example arguments: ${JSON.stringify(example)}` : undefined,
     `HTTP: ${def.method} ${def.path}`,
     `Required scope: ${def.scope}`,
     `API version: ${versionLabel}`,
@@ -168,6 +174,11 @@ export function registerEndpoint(server: McpServer, client: TiendanubeClient, de
   ]
     .filter(Boolean)
     .join("\n");
+}
+
+export function registerEndpoint(server: McpServer, client: TiendanubeClient, def: EndpointDef): void {
+  const inputShape = buildInputShape(def);
+  const description = describeEndpoint(def);
 
   server.registerTool(
     def.name,
