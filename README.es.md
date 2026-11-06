@@ -4,6 +4,7 @@
 [![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-green.svg)](LICENSE)
 [![MCP](https://img.shields.io/badge/Model%20Context%20Protocol-server-blue)](https://modelcontextprotocol.io)
 [![Node](https://img.shields.io/badge/node-%E2%89%A518-brightgreen)](https://nodejs.org)
+[![M8ven Score](https://m8ven.ai/badge/mcp/fedeclavero-tiendanube-mcp-15lqtn?v=28d7c213d8e8d5a5cf31a0c542a1a3b3)](https://m8ven.ai/mcp/fedeclavero-tiendanube-mcp-15lqtn?s=readme)
 
 **🇬🇧 [Read in English](README.md)** · [Sitio web](https://fedeclavero.github.io/tiendanube-mcp/es/) · [Referencia de herramientas](guides/TOOLS.md) · [Recetas de prompts](guides/RECIPES.md)
 
