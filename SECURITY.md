@@ -2,16 +2,15 @@
 
 ## Reporting a vulnerability
 
-Please report security issues privately through GitHub's *Report a vulnerability* button (Security tab) instead of a public issue. You'll get a response as soon as possible.
+Please report security issues privately through GitHub's *Report a vulnerability* button (Security tab) instead of a public issue.
 
 ## Handling credentials
 
-- Access tokens give access to a real store. Never commit them, paste them in issues, or share screenshots that contain them.
-- `configure` / `login` save the credentials once to a user-level file (`~/.config/tiendanube-mcp/credentials.json`, Windows `%APPDATA%\tiendanube-mcp\credentials.json`) created with owner-only permissions (0600 inside a 0700 folder; on Windows the user-profile ACL applies). The file is not encrypted. It is never inside a project folder, and the setup commands never print the token.
-- AI agents may handle the keys on the user's behalf **after the user gives explicit permission**; the install guide makes the agent ask for it first.
-- Prefer the minimum you are comfortable with. By default the server reads and writes; `configure --read-only` removes every write tool.
+- Access tokens grant full read and write access to a real store. Never commit them, paste them in chat or issues, or share screenshots that contain them.
+- `configure` and `login` save credentials once to a private user-level file (`~/.config/tiendanube-mcp/credentials.json` on Linux/macOS with `0600` permissions inside a `0700` directory; `%APPDATA%\tiendanube-mcp\credentials.json` on Windows with user-profile ACLs). The file is not encrypted on disk. Writes are atomic and locked; setup commands never print tokens or secrets.
+- OAuth authorization runs strictly in the local terminal (`tiendanube-mcp login`) with CSRF `state` verification and constant-time comparison; `tiendanube_oauth_exchange_code` never returns access tokens to the chat.
 - If a token leaks, rotate or revoke it from your Tiendanube admin panel immediately.
-- The server sends credentials only to the configured Tiendanube API host and has no telemetry.
-- `tiendanube_api_request` can only reach the configured store: the origin and store ID are fixed, and the path is validated (no host, version, `..`, `//`, query or fragment).
-- `tiendanube_product_image_add_from_file` only uploads files whose signature is a real JPEG, PNG, GIF or WEBP image (not by extension), so it cannot be used to send arbitrary local files.
-- HTTP mode (`TRANSPORT=http`) binds to `127.0.0.1` and **always requires a token** (`MCP_AUTH_TOKEN`; one is generated if unset), as a bearer header or in the URL path. If you expose it through a tunnel, treat the URL as a password and stop the tunnel when you do not need it.
+- The server sends credentials only to the two official Tiendanube / Nuvemshop HTTPS origins (`https://api.tiendanube.com` and `https://api.nuvemshop.com.br`), disables redirects, and collects no telemetry.
+- `tiendanube_api_request` can only reach the configured store: origin and store ID are fixed, and paths reject schemes, versions, `..`, `//`, encoded separators, queries, and fragments.
+- Local image uploads (`tiendanube_product_image_add_from_file` and `image_files` in `tiendanube_create_combo`) work only over local `stdio` (blocked over HTTP), verify real JPEG/PNG/GIF/WEBP magic bytes and full decode limits (`<= 10 MB`, `<= 8192 px`, `<= 16 MP`), and block Windows UNC paths.
+- Streamable HTTP mode (`tiendanube-mcp serve --transport http` or `TRANSPORT=http`) binds only to loopback (`127.0.0.1`, `localhost`, `::1`), validates `Host` and `Origin` headers, and always requires a secret token (`MCP_AUTH_TOKEN` or the persistent `0600` token managed by `tiendanube-mcp http-token`, revocable live via `--rotate`). If exposed via an HTTPS tunnel, treat the connector URL as a password and stop the tunnel when idle.

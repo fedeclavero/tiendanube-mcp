@@ -1,0 +1,2560 @@
+[
+  {
+    "name": "tiendanube_store_get",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/store",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_store_media_quotas_get",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/store/media/quotas",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_products_list",
+    "input": {
+      "ids": "demo",
+      "since_id": "demo",
+      "language": "demo",
+      "q": "remera",
+      "handle": "demo",
+      "category_id": "demo",
+      "published": true,
+      "free_shipping": "demo",
+      "max_stock": "demo",
+      "min_stock": "demo",
+      "has_promotional_price": "demo",
+      "has_weight": "demo",
+      "has_dimensions": "demo",
+      "has_skus": "demo",
+      "created_at_min": "demo",
+      "created_at_max": "demo",
+      "updated_at_min": "demo",
+      "updated_at_max": "demo",
+      "sort_by": "demo",
+      "per_page": 20,
+      "fields": "id,name,variants,images"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products",
+      "query": {
+        "ids": "demo",
+        "since_id": "demo",
+        "language": "demo",
+        "q": "remera",
+        "handle": "demo",
+        "category_id": "demo",
+        "published": true,
+        "free_shipping": "demo",
+        "max_stock": "demo",
+        "min_stock": "demo",
+        "has_promotional_price": "demo",
+        "has_weight": "demo",
+        "has_dimensions": "demo",
+        "has_skus": "demo",
+        "created_at_min": "demo",
+        "created_at_max": "demo",
+        "updated_at_min": "demo",
+        "updated_at_max": "demo",
+        "sort_by": "demo",
+        "page": 1,
+        "per_page": 20,
+        "fields": "id,name,variants,images"
+      }
+    }
+  },
+  {
+    "name": "tiendanube_products_get",
+    "input": {
+      "id": 123456
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/123456",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_products_get_by_sku",
+    "input": {
+      "sku": "REM-001-M"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/sku/REM-001-M",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_products_create",
+    "input": {
+      "name": {
+        "es": "Remera Básica"
+      },
+      "published": false,
+      "variants": [
+        {
+          "price": "15000.00",
+          "stock_management": true,
+          "stock": 10,
+          "sku": "REM-001"
+        }
+      ],
+      "categories": [
+        456
+      ]
+    },
+    "request": {
+      "method": "POST",
+      "path": "/products",
+      "query": {},
+      "body": {
+        "name": {
+          "es": "Remera Básica"
+        },
+        "variants": [
+          {
+            "price": "15000.00",
+            "stock_management": true,
+            "stock": 10,
+            "sku": "REM-001"
+          }
+        ],
+        "categories": [
+          456
+        ],
+        "published": false
+      }
+    }
+  },
+  {
+    "name": "tiendanube_products_update",
+    "input": {
+      "id": 123456,
+      "published": true,
+      "description": {
+        "es": "<p>Texto nuevo</p>"
+      }
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/products/123456",
+      "query": {},
+      "body": {
+        "description": {
+          "es": "<p>Texto nuevo</p>"
+        },
+        "published": true
+      }
+    }
+  },
+  {
+    "name": "tiendanube_products_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/products/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_products_batch_stock_price",
+    "input": {
+      "items": [
+        {
+          "id": 123456,
+          "variants": [
+            {
+              "id": 789,
+              "price": "16500.00"
+            }
+          ]
+        }
+      ]
+    },
+    "request": {
+      "method": "PATCH",
+      "path": "/products/stock-price",
+      "query": {},
+      "body": [
+        {
+          "id": 123456,
+          "variants": [
+            {
+              "id": 789,
+              "price": "16500.00"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "tiendanube_variants_list",
+    "input": {
+      "product_id": "9007199254741234",
+      "since_id": "demo",
+      "created_at_min": "demo",
+      "created_at_max": "demo",
+      "updated_at_min": "demo",
+      "updated_at_max": "demo"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/9007199254741234/variants",
+      "query": {
+        "since_id": "demo",
+        "created_at_min": "demo",
+        "created_at_max": "demo",
+        "updated_at_min": "demo",
+        "updated_at_max": "demo",
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_variants_get",
+    "input": {
+      "product_id": "9007199254741234",
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/9007199254741234/variants/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_variants_create",
+    "input": {
+      "product_id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/products/9007199254741234/variants",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_variants_update",
+    "input": {
+      "product_id": 123456,
+      "id": 789,
+      "price": "16500.00",
+      "promotional_price": "14900.00"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/products/123456/variants/789",
+      "query": {},
+      "body": {
+        "price": "16500.00",
+        "promotional_price": "14900.00"
+      }
+    }
+  },
+  {
+    "name": "tiendanube_variants_batch_replace",
+    "input": {
+      "product_id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/products/9007199254741234/variants",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_variants_batch_update",
+    "input": {
+      "product_id": "9007199254741234"
+    },
+    "request": {
+      "method": "PATCH",
+      "path": "/products/9007199254741234/variants",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_variants_delete",
+    "input": {
+      "product_id": "9007199254741234",
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/products/9007199254741234/variants/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_variants_update_stock",
+    "input": {
+      "product_id": 123456,
+      "id": 789,
+      "action": "replace",
+      "value": 25
+    },
+    "request": {
+      "method": "POST",
+      "path": "/products/123456/variants/stock",
+      "query": {},
+      "body": {
+        "action": "replace",
+        "value": 25,
+        "id": 789
+      }
+    }
+  },
+  {
+    "name": "tiendanube_product_images_list",
+    "input": {
+      "product_id": "9007199254741234",
+      "since_id": "demo",
+      "src": "demo",
+      "position": "demo"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/9007199254741234/images",
+      "query": {
+        "since_id": "demo",
+        "src": "demo",
+        "position": "demo",
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_product_images_get",
+    "input": {
+      "product_id": "9007199254741234",
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/9007199254741234/images/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_product_images_create",
+    "input": {
+      "product_id": 123456,
+      "src": "https://example.com/foto.jpg",
+      "position": 1
+    },
+    "request": {
+      "method": "POST",
+      "path": "/products/123456/images",
+      "query": {},
+      "body": {
+        "src": "https://example.com/foto.jpg",
+        "position": 1
+      }
+    }
+  },
+  {
+    "name": "tiendanube_product_images_upload_unattached",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/products/images",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_product_images_update",
+    "input": {
+      "product_id": "9007199254741234",
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/products/9007199254741234/images/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_product_images_delete",
+    "input": {
+      "product_id": "9007199254741234",
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/products/9007199254741234/images/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_categories_list",
+    "input": {
+      "since_id": "demo",
+      "created_at_min": "demo",
+      "created_at_max": "demo",
+      "updated_at_min": "demo",
+      "updated_at_max": "demo",
+      "language": "demo",
+      "handle": "demo",
+      "parent_id": "demo"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/categories",
+      "query": {
+        "since_id": "demo",
+        "created_at_min": "demo",
+        "created_at_max": "demo",
+        "updated_at_min": "demo",
+        "updated_at_max": "demo",
+        "language": "demo",
+        "handle": "demo",
+        "parent_id": "demo",
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_categories_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/categories/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_categories_create",
+    "input": {
+      "name": {
+        "es": "Remeras"
+      }
+    },
+    "request": {
+      "method": "POST",
+      "path": "/categories",
+      "query": {},
+      "body": {
+        "name": {
+          "es": "Remeras"
+        }
+      }
+    }
+  },
+  {
+    "name": "tiendanube_categories_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/categories/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_categories_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/categories/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_kits_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/kits/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/products/price-tables",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/price-tables/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/products/price-tables",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/products/price-tables/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/products/price-tables/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_categories_list",
+    "input": {
+      "table_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/price-tables/9007199254741234/categories",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_categories_add",
+    "input": {
+      "table_id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/products/price-tables/9007199254741234/categories",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_categories_update",
+    "input": {
+      "table_id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/products/price-tables/9007199254741234/categories",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_categories_remove",
+    "input": {
+      "table_id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/products/price-tables/9007199254741234/categories",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_variants_list",
+    "input": {
+      "table_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/price-tables/9007199254741234/variants",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_variants_add",
+    "input": {
+      "table_id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/products/price-tables/9007199254741234/variants",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_variants_update",
+    "input": {
+      "table_id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/products/price-tables/9007199254741234/variants",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_variants_remove",
+    "input": {
+      "table_id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/products/price-tables/9007199254741234/variants",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_customers_list",
+    "input": {
+      "table_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/price-tables/9007199254741234/customers",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_customers_add",
+    "input": {
+      "table_id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/products/price-tables/9007199254741234/customers",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_price_tables_customers_remove",
+    "input": {
+      "table_id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/products/price-tables/9007199254741234/customers",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_orders_list",
+    "input": {
+      "since_id": "demo",
+      "created_at_min": "demo",
+      "created_at_max": "demo",
+      "updated_at_min": "demo",
+      "updated_at_max": "demo",
+      "status": "demo",
+      "financial_status": "paid",
+      "shipping_status": "unpacked",
+      "customer_id": "demo",
+      "q": "demo",
+      "total_min": "demo",
+      "total_max": "demo",
+      "channels": "demo",
+      "payment_methods": "demo",
+      "aggregates": "price_tables",
+      "per_page": 50
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders",
+      "version": "unstable",
+      "query": {
+        "since_id": "demo",
+        "created_at_min": "demo",
+        "created_at_max": "demo",
+        "updated_at_min": "demo",
+        "updated_at_max": "demo",
+        "status": "demo",
+        "financial_status": "paid",
+        "shipping_status": "unpacked",
+        "customer_id": "demo",
+        "q": "demo",
+        "total_min": "demo",
+        "total_max": "demo",
+        "channels": "demo",
+        "payment_methods": "demo",
+        "aggregates": "price_tables",
+        "page": 1,
+        "per_page": 50
+      }
+    }
+  },
+  {
+    "name": "tiendanube_orders_get",
+    "input": {
+      "id": 1042,
+      "aggregates": "price_tables"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/1042",
+      "version": "unstable",
+      "query": {
+        "aggregates": "price_tables"
+      }
+    }
+  },
+  {
+    "name": "tiendanube_orders_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/orders",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_orders_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/orders/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_orders_close",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/orders/9007199254741234/close",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_orders_open",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/orders/9007199254741234/open",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_orders_cancel",
+    "input": {
+      "id": 1050,
+      "reason": "inventory",
+      "restock": true,
+      "email": true
+    },
+    "request": {
+      "method": "POST",
+      "path": "/orders/1050/cancel",
+      "query": {},
+      "body": {
+        "reason": "inventory",
+        "email": true,
+        "restock": true
+      }
+    }
+  },
+  {
+    "name": "tiendanube_orders_history_values_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/history/values",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_orders_history_editions_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/history/editions",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_orders_subscriptions_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/subscriptions",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_orders_invoices_list",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/invoices",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_orders_invoices_create",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/orders/9007199254741234/invoices",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_draft_orders_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/draft_orders",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_draft_orders_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/draft_orders/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_draft_orders_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/draft_orders",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_draft_orders_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/draft_orders/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_draft_orders_confirm",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/draft_orders/9007199254741234/confirm",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_draft_orders_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/draft_orders/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_fulfillment_orders_list",
+    "input": {
+      "order_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/fulfillment-orders",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_fulfillment_orders_get",
+    "input": {
+      "order_id": "9007199254741234",
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/fulfillment-orders/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_fulfillment_orders_update",
+    "input": {
+      "order_id": 1042,
+      "id": "abc123",
+      "status": "DISPATCHED",
+      "tracking_info": {
+        "code": "ABC123"
+      },
+      "notify_customer": true
+    },
+    "request": {
+      "method": "PATCH",
+      "path": "/orders/1042/fulfillment-orders/abc123",
+      "query": {},
+      "body": {
+        "status": "DISPATCHED",
+        "tracking_info": {
+          "code": "ABC123"
+        },
+        "notify_customer": true
+      }
+    }
+  },
+  {
+    "name": "tiendanube_fulfillment_orders_delete",
+    "input": {
+      "order_id": "9007199254741234",
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/orders/9007199254741234/fulfillment-orders/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_fulfillment_tracking_events_create",
+    "input": {
+      "order_id": "9007199254741234",
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/orders/9007199254741234/fulfillment-orders/9007199254741234/tracking-events",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_fulfillment_tracking_events_update",
+    "input": {
+      "order_id": "9007199254741234",
+      "id": "9007199254741234",
+      "event_id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/orders/9007199254741234/fulfillment-orders/9007199254741234/tracking-events/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_fulfillment_tracking_events_delete",
+    "input": {
+      "order_id": "9007199254741234",
+      "id": "9007199254741234",
+      "event_id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/orders/9007199254741234/fulfillment-orders/9007199254741234/tracking-events/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_carts_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/carts/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_carts_delete_line_item",
+    "input": {
+      "id": "9007199254741234",
+      "line_item_id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/carts/9007199254741234/line-items/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_carts_delete_coupon",
+    "input": {
+      "id": "9007199254741234",
+      "coupon_id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/carts/9007199254741234/coupons/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_abandoned_checkouts_list",
+    "input": {
+      "since_id": "demo",
+      "created_at_min": "2026-10-30T00:00:00-03:00",
+      "created_at_max": "demo",
+      "updated_at_min": "demo",
+      "updated_at_max": "demo"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/checkouts",
+      "query": {
+        "since_id": "demo",
+        "created_at_min": "2026-10-30T00:00:00-03:00",
+        "created_at_max": "demo",
+        "updated_at_min": "demo",
+        "updated_at_max": "demo",
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_abandoned_checkouts_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/checkouts/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_abandoned_checkouts_apply_coupon",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/checkouts/9007199254741234/coupon",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_customers_list",
+    "input": {
+      "since_id": "demo",
+      "created_at_min": "demo",
+      "created_at_max": "demo",
+      "updated_at_min": "demo",
+      "updated_at_max": "demo",
+      "q": "ana@example.com",
+      "email": "demo",
+      "total_spent_min": "demo",
+      "accepts_marketing": "demo"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/customers",
+      "query": {
+        "since_id": "demo",
+        "created_at_min": "demo",
+        "created_at_max": "demo",
+        "updated_at_min": "demo",
+        "updated_at_max": "demo",
+        "q": "ana@example.com",
+        "email": "demo",
+        "total_spent_min": "demo",
+        "accepts_marketing": "demo",
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_customers_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/customers/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_customers_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/customers",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_customers_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/customers/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_customers_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/customers/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_coupons_list",
+    "input": {
+      "since_id": "demo",
+      "created_at_min": "demo",
+      "created_at_max": "demo",
+      "updated_at_min": "demo",
+      "updated_at_max": "demo",
+      "code": "demo",
+      "type": "demo",
+      "valid": "demo",
+      "min_start_date": "demo",
+      "max_start_date": "demo",
+      "min_end_date": "demo",
+      "max_end_date": "demo",
+      "status": "demo",
+      "sort_by": "demo"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/coupons",
+      "query": {
+        "since_id": "demo",
+        "created_at_min": "demo",
+        "created_at_max": "demo",
+        "updated_at_min": "demo",
+        "updated_at_max": "demo",
+        "code": "demo",
+        "type": "demo",
+        "valid": "demo",
+        "min_start_date": "demo",
+        "max_start_date": "demo",
+        "min_end_date": "demo",
+        "max_end_date": "demo",
+        "status": "demo",
+        "sort_by": "demo",
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_coupons_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/coupons/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_coupons_create",
+    "input": {
+      "code": "BIENVENIDA15",
+      "type": "percentage",
+      "value": "15",
+      "max_uses_per_client": 1,
+      "end_date": "2026-12-31"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/coupons",
+      "query": {},
+      "body": {
+        "code": "BIENVENIDA15",
+        "type": "percentage",
+        "value": "15",
+        "end_date": "2026-12-31",
+        "max_uses_per_client": 1
+      }
+    }
+  },
+  {
+    "name": "tiendanube_coupons_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/coupons/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_coupons_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/coupons/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_promotions_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/promotions",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_promotions_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/promotions/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_promotions_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/promotions",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_promotions_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/promotions/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_discounts_callbacks_upsert",
+    "input": {},
+    "request": {
+      "method": "PUT",
+      "path": "/discounts/callbacks",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_discounts_callbacks_delete",
+    "input": {},
+    "request": {
+      "method": "DELETE",
+      "path": "/discounts/callbacks",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_locations_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/locations",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_locations_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/locations/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_locations_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/locations",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_locations_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/locations/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_locations_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/locations/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_locations_update_priorities",
+    "input": {},
+    "request": {
+      "method": "PATCH",
+      "path": "/locations/priorities",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_locations_set_default",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PATCH",
+      "path": "/locations/9007199254741234/chosen-as-default",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_locations_inventory_levels_list",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/locations/9007199254741234/inventory-levels",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_shipping_carriers_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/shipping_carriers",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_shipping_carriers_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/shipping_carriers/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_shipping_carriers_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/shipping_carriers",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_shipping_carriers_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/shipping_carriers/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_shipping_carriers_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/shipping_carriers/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_shipping_carrier_options_list",
+    "input": {
+      "carrier_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/shipping_carriers/9007199254741234/options",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_shipping_carrier_options_get",
+    "input": {
+      "carrier_id": "9007199254741234",
+      "option_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/shipping_carriers/9007199254741234/options/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_shipping_carrier_options_create",
+    "input": {
+      "carrier_id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/shipping_carriers/9007199254741234/options",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_shipping_carrier_options_update",
+    "input": {
+      "carrier_id": "9007199254741234",
+      "option_id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/shipping_carriers/9007199254741234/options/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_shipping_carrier_options_delete",
+    "input": {
+      "carrier_id": "9007199254741234",
+      "option_id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/shipping_carriers/9007199254741234/options/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_order_fulfillments_list",
+    "input": {
+      "order_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/fulfillments",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_order_fulfillments_get",
+    "input": {
+      "order_id": "9007199254741234",
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/fulfillments/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_order_fulfillments_create",
+    "input": {
+      "order_id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/orders/9007199254741234/fulfillments",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_order_fulfillments_delete",
+    "input": {
+      "order_id": "9007199254741234",
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/orders/9007199254741234/fulfillments/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_business_rules_upsert",
+    "input": {
+      "domain": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/business_rules/integrations/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_payment_providers_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/payment_providers",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_payment_providers_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/payment_providers/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_payment_providers_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/payment_providers",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_payment_providers_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/payment_providers/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_payment_providers_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/payment_providers/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_payment_options_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/payment-options",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_payment_provider_options_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/payment_providers/options",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_transactions_list",
+    "input": {
+      "order_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/transactions",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_transactions_get",
+    "input": {
+      "order_id": "9007199254741234",
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/transactions/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_transactions_create",
+    "input": {
+      "order_id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/orders/9007199254741234/transactions",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_transaction_events_create",
+    "input": {
+      "order_id": "9007199254741234",
+      "transaction_id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/orders/9007199254741234/transactions/9007199254741234/events",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_disputes_create",
+    "input": {
+      "order_id": "9007199254741234",
+      "transaction_id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/orders/9007199254741234/transactions/9007199254741234/disputes",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_disputes_update",
+    "input": {
+      "order_id": "9007199254741234",
+      "transaction_id": "9007199254741234",
+      "dispute_id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/orders/9007199254741234/transactions/9007199254741234/disputes/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_disputes_get",
+    "input": {
+      "order_id": "9007199254741234",
+      "transaction_id": "9007199254741234",
+      "dispute_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/transactions/9007199254741234/disputes/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_external_invoices_list",
+    "input": {
+      "order_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/invoices/external",
+      "version": "unstable",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_external_invoices_get",
+    "input": {
+      "order_id": "9007199254741234",
+      "key": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/orders/9007199254741234/invoices/external/9007199254741234",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_external_invoices_create",
+    "input": {
+      "order_id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/orders/9007199254741234/invoices/external",
+      "version": "unstable",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_external_invoices_update",
+    "input": {
+      "order_id": "9007199254741234",
+      "key": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/orders/9007199254741234/invoices/external/9007199254741234",
+      "version": "unstable",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_external_invoices_delete",
+    "input": {
+      "order_id": "9007199254741234",
+      "key": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/orders/9007199254741234/invoices/external/9007199254741234",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_billing_plans_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/plans",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_billing_plans_update",
+    "input": {
+      "plan_id": "9007199254741234"
+    },
+    "request": {
+      "method": "PATCH",
+      "path": "/plans/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_billing_plans_delete",
+    "input": {
+      "plan_id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/plans/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_billing_subscriptions_get",
+    "input": {
+      "service_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/concepts/app-cost/services/9007199254741234/subscriptions",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_billing_subscriptions_update",
+    "input": {
+      "service_id": "9007199254741234"
+    },
+    "request": {
+      "method": "PATCH",
+      "path": "/concepts/app-cost/services/9007199254741234/subscriptions",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_billing_charges_create",
+    "input": {
+      "service_id": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/services/9007199254741234/charges",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_pages_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/pages",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_pages_get",
+    "input": {
+      "pageID": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/pages/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_pages_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/pages",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_pages_update",
+    "input": {
+      "pageID": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/pages/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_pages_delete",
+    "input": {
+      "pageID": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/pages/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_blogs_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/blogs",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_blog_posts_list",
+    "input": {
+      "blog_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/blogs/9007199254741234/posts",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_email_templates_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/email-templates",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_email_templates_get",
+    "input": {
+      "templateID": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/email-templates/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_email_templates_update",
+    "input": {
+      "templateID": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/email-templates/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_scripts_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/scripts",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_scripts_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/scripts/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_scripts_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/scripts",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_scripts_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/scripts/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_scripts_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/scripts/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_metafields_list_by_resource",
+    "input": {
+      "owner_resource": "9007199254741234",
+      "owner_id": "demo",
+      "namespace": "demo",
+      "key": "demo",
+      "value": "demo"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/metafields/9007199254741234",
+      "query": {
+        "owner_id": "demo",
+        "namespace": "demo",
+        "key": "demo",
+        "value": "demo",
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_metafields_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/metafields/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_metafields_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/metafields",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_metafields_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/metafields/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_metafields_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/metafields/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_fields_create",
+    "input": {
+      "entity": "products/variants"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/products/variants/custom-fields",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_fields_list",
+    "input": {
+      "entity": "products/variants"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/variants/custom-fields",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_custom_fields_get",
+    "input": {
+      "entity": "products/variants",
+      "custom_field_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/variants/custom-fields/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_fields_update",
+    "input": {
+      "entity": "products/variants",
+      "custom_field_id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/products/variants/custom-fields/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_fields_delete",
+    "input": {
+      "entity": "products/variants",
+      "custom_field_id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/products/variants/custom-fields/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_fields_get_by_entity_id",
+    "input": {
+      "entity": "products/variants",
+      "entity_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/variants/9007199254741234/custom-fields",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_fields_list_owners",
+    "input": {
+      "entity": "products/variants",
+      "custom_field_id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/variants/custom-fields/9007199254741234/owners",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_custom_fields_set_values",
+    "input": {
+      "entity": "products/variants",
+      "entity_id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/products/variants/9007199254741234/custom-fields/values",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_field_defs_create",
+    "input": {
+      "entity": "products/variants"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/products/variants/custom-fields",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_field_defs_list",
+    "input": {
+      "entity": "products/variants"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/variants/custom-fields",
+      "version": "unstable",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_custom_field_defs_get",
+    "input": {
+      "entity": "products/variants",
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/variants/custom-fields/9007199254741234/9007199254741234",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_field_defs_delete",
+    "input": {
+      "entity": "products/variants",
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/products/variants/custom-fields/9007199254741234/9007199254741234",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_field_capabilities_list",
+    "input": {
+      "entity": "products/variants",
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/products/variants/custom-fields/9007199254741234/9007199254741234/capabilities",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_field_capabilities_add",
+    "input": {
+      "entity": "products/variants",
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/products/variants/custom-fields/9007199254741234/9007199254741234/capabilities",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_field_capabilities_remove",
+    "input": {
+      "entity": "products/variants",
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/products/variants/custom-fields/9007199254741234/9007199254741234/capabilities",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_objects_create",
+    "input": {},
+    "request": {
+      "method": "POST",
+      "path": "/custom-objects",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_objects_list",
+    "input": {},
+    "request": {
+      "method": "GET",
+      "path": "/custom-objects",
+      "version": "unstable",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_custom_objects_get",
+    "input": {
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/custom-objects/9007199254741234/9007199254741234",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_objects_update",
+    "input": {
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/custom-objects/9007199254741234/9007199254741234",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_objects_delete",
+    "input": {
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/custom-objects/9007199254741234/9007199254741234",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_object_entries_create",
+    "input": {
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/custom-objects/9007199254741234/9007199254741234/entries",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_object_entries_list",
+    "input": {
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/custom-objects/9007199254741234/9007199254741234/entries",
+      "version": "unstable",
+      "query": {
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_custom_object_entries_get",
+    "input": {
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234",
+      "entrySlug": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/custom-objects/9007199254741234/9007199254741234/entries/9007199254741234",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_object_entries_update",
+    "input": {
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234",
+      "entrySlug": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/custom-objects/9007199254741234/9007199254741234/entries/9007199254741234",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_custom_object_entries_delete",
+    "input": {
+      "namespace": "9007199254741234",
+      "slug": "9007199254741234",
+      "entrySlug": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/custom-objects/9007199254741234/9007199254741234/entries/9007199254741234",
+      "version": "unstable",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_webhooks_list",
+    "input": {
+      "since_id": "demo",
+      "created_at_min": "demo",
+      "created_at_max": "demo",
+      "updated_at_min": "demo",
+      "updated_at_max": "demo",
+      "url": "demo",
+      "event": "demo"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/webhooks",
+      "query": {
+        "since_id": "demo",
+        "created_at_min": "demo",
+        "created_at_max": "demo",
+        "updated_at_min": "demo",
+        "updated_at_max": "demo",
+        "url": "demo",
+        "event": "demo",
+        "page": 1,
+        "per_page": 30
+      }
+    }
+  },
+  {
+    "name": "tiendanube_webhooks_get",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/webhooks/9007199254741234",
+      "query": {}
+    }
+  },
+  {
+    "name": "tiendanube_webhooks_create",
+    "input": {
+      "url": "https://my-api.example.com/hooks",
+      "event": "order/paid"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/webhooks",
+      "query": {},
+      "body": {
+        "url": "https://my-api.example.com/hooks",
+        "event": "order/paid"
+      }
+    }
+  },
+  {
+    "name": "tiendanube_webhooks_update",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/webhooks/9007199254741234",
+      "query": {},
+      "body": {}
+    }
+  },
+  {
+    "name": "tiendanube_webhooks_delete",
+    "input": {
+      "id": "9007199254741234"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/webhooks/9007199254741234",
+      "query": {}
+    }
+  }
+]

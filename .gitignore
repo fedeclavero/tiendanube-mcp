@@ -1,2 +1,6 @@
-node_modules
+/target/
 .env
+credentials.json
+credentials.lock
+pending-login.json
+http-token

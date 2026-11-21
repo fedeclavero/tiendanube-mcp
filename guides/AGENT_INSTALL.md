@@ -1,142 +1,111 @@
-# Agent install guide: connect the Tiendanube MCP server
+# Instalación para agentes de IA (ejecutala de punta a punta)
 
-> **You are an AI agent and a person asked you to install or connect this MCP server to their Tiendanube / Nuvemshop store. Do the whole setup yourself.** The person usually knows nothing about tokens, scopes or config files, so never hand a step back with "do it yourself". Ask only for the few values you cannot get alone, then place them yourself. Talk in the language the person uses.
+Cuando el usuario comparta el enlace del repositorio y pida instalarlo, ejecutá esta guía en la computadora donde corre su cliente (**Claude Code** o **Codex en la app de ChatGPT**). `TN` representa la ruta absoluta de `tiendanube-mcp` en los ejemplos. En PowerShell podés guardar esa ruta en `$TN` e invocarla con `& $TN`. Hablá en el idioma del usuario.
 
-Project: <https://github.com/fedeclavero/tiendanube-mcp> · Run it with: `npx -y github:fedeclavero/tiendanube-mcp <command>`
+No hace falta instalar Node.js, Python, Git, Rust ni el redistribuible de Visual C++. El servidor se distribuye como un ejecutable nativo autónomo.
 
-Setup commands (all non-interactive, all safe to re-run): `configure`, `login`, `install`, `doctor`, `clients`, `uninstall`.
+## 1. Elegí el cliente y descargá el binario
 
-## Step 0. Ask permission once
+1. Detectá si estás en **Claude Code** o **Codex**. Registrá ese cliente. Si el usuario eligió ambos, registrá ambos. Si tu sesión corre en otro equipo, retomá el pedido desde el cliente local.
+2. Abrí la última release de GitHub y descargá el archivo de la tabla y `SHA256SUMS.txt` del mismo tag. Compará el SHA-256 con `Get-FileHash -Algorithm SHA256` en Windows, `sha256sum` en Linux o `shasum -a 256` en macOS. [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest)
 
-Say this (translate it), then wait for a yes:
-
-> "To connect your store I need to see and save your Tiendanube keys on this computer, and add the Tiendanube connector to your AI app's configuration. Do you allow me to do that?"
-
-After the yes you may read, request and write the keys and the client configuration **without asking again**. Hygiene that always applies: never commit a key to git, never paste it into a public place, and do not repeat it in your final summary.
-
-## Step 1. Check Node.js
-
-```bash
-node --version    # must be v18 or newer
-```
-
-Missing or older? Offer to install it, then do it:
-
-| System | Command |
+| Equipo | Archivo de la release |
 | --- | --- |
-| Windows | `winget install OpenJS.NodeJS.LTS` (then open a new terminal) |
-| macOS | `brew install node` (or the installer from <https://nodejs.org>) |
-| Linux | your package manager (`apt install nodejs npm`) or <https://nodejs.org> |
+| Windows 11 x64 o ARM64 con emulación x64 | `tiendanube-mcp-windows-x86_64.zip` |
+| macOS Apple Silicon | `tiendanube-mcp-macos-arm64.tar.gz` |
+| macOS Intel | `tiendanube-mcp-macos-x86_64.tar.gz` |
+| Linux x86-64 | `tiendanube-mcp-linux-x86_64.tar.gz` |
 
-**npm 12 or newer refuses to download packages from GitHub by default** (`EALLOWGIT: Fetching packages of type "git" have been disabled`). Check with `npm --version`. If you see that error, run every `npx` command of this guide with the variable `npm_config_allow_git=all` (Linux/macOS: `npm_config_allow_git=all npx -y github:fedeclavero/tiendanube-mcp ...`; PowerShell: `$env:npm_config_allow_git="all"` first). To make AI apps able to launch the connector, also make it permanent with `npm config set allow-git all`.
+3. Extraé el archivo. En Windows usá `Expand-Archive` y guardá `tiendanube-mcp.exe` en `%LOCALAPPDATA%\Programs\tiendanube-mcp`. En macOS o Linux usá `tar -xzf` y guardá el binario en `~/.local/bin` (con permiso de ejecución). Conservá esa ubicación estable para que el cliente pueda iniciarlo y verificá con `TN --version`. El ZIP de Windows también incluye `Instalar.cmd` para instalación interactiva con doble clic.
+4. Si ya existe una instalación autorizada, **reutilizá sus credenciales sin rotarlas ni volver a pedirlas**. Ejecutá `TN doctor --offline --json` para revisar el estado local. Si las credenciales ya están guardadas y no faltan permisos de escritura, pasá directo al paso 4.
 
-## Step 2. Get the credentials
+## 2. Conseguí las credenciales con TODOS los permisos
 
-Tell the person, in simple words, that you need two things and that you will guide them click by click. Follow [GETTING_CREDENTIALS.md](GETTING_CREDENTIALS.md). Choose the route:
+El servidor opera siempre con **acceso completo de lectura y escritura** (no existe modo solo lectura). Desde el primer momento debés guiar al vendedor para habilitar **todos los permisos disponibles** (lectura y escritura en todos los recursos), porque los permisos de Tiendanube solo aplican a tokens nuevos. Detalles en [GETTING_CREDENTIALS.md](GETTING_CREDENTIALS.md).
 
-- **Route A (simplest): custom app in the store admin.** The admin shows a **Store ID** and an **Access token**. Ask the person to paste both to you.
-- **Route B: partner app.** Needs an **App ID** and an **App secret**; the `login` command (Step 3B) turns them into the token automatically.
+Elegí la ruta según el plan de la tienda (preguntá también si la tienda es de Brasil / Nuvemshop para pasar `--region nuvemshop`):
 
-**Core rule: OMNIPOTENCE AND PLUG & PLAY (FULL PERMISSIONS).**
-The user must have an effortless, total-power experience where the AI can execute any task without hitting permission barriers.
-- **You MUST ensure ALL permissions (scopes) are checked:** read and write across every single resource (products, orders, customers, coupons, shipping, payments, drafts, content, webhooks). Not a single permission left unchecked.
-- **If the user knows the keys:** ask them to paste their Store ID and Access Token (or App ID + Secret).
-- **If the user does not know how to get them:** guide them click by click. Open the portal page for them (`xdg-open <url>` on Linux, `open <url>` on macOS, `start <url>` on Windows).
-- **If the user does not understand or cannot do it:** YOU, AS THE AI AGENT, MUST USE YOUR BROWSER TOOL (Agent Browser, Playwright, or browser navigation) to navigate to the store admin or partner portal, create the custom app, actively tick EVERY single read and write permission checkbox, copy the keys, and configure the MCP automatically. The user only needs to log in if requested. That ensures a 100% Plug & Play setup.
+### Ruta A (más simple): aplicación a medida desde el panel de la tienda
+1. Abrí el panel de administración de Tiendanube/Nuvemshop → **Configuraciones → Aplicaciones a medida** y creá una aplicación para Tiendanube MCP.
+2. En **Perfiles de acceso**, elegí **Acceso total** (o tildá **todos los permisos de lectura y escritura sin excepción**). Guardá la aplicación y tocá **Revelar** para ver el token (Tiendanube lo muestra completo una sola vez).
+3. El usuario completa su inicio de sesión y doble factor. Si acompañás la creación desde el navegador, revisá con el usuario que todos los permisos estén marcados antes de guardar.
+4. Pedile el **ID de la tienda** y guardá las credenciales en el paso 3A.
 
-## Step 3. Save the credentials
+### Ruta B: aplicación del Portal de Partners con OAuth 2.0
+1. Abrí `https://partners.tiendanube.com/` (o `https://partners.nuvemshop.com.br/` en Brasil) y creá o editá tu aplicación.
+2. En **Datos básicos**, habilitá **todos los permisos disponibles con lectura y escritura**. Si la app ya estaba instalada en la tienda, habrá que reinstalarla para emitir un token con los permisos nuevos.
+3. Registrá como **URL de redirección** exactamente `http://localhost:8765/callback` (o una URL HTTPS bajo tu control si el portal no admite retorno local).
+4. Copiá el **App ID** y el **App Secret** y seguí en el paso 3B.
 
-### 3A. You have a Store ID and an Access token
+## 3. Guardá las credenciales (en privado, nunca en el chat ni argumentos)
 
-```bash
-npx -y github:fedeclavero/tiendanube-mcp configure --store-id <STORE_ID> --token <ACCESS_TOKEN>
-```
+Las credenciales se guardan una sola vez en `~/.config/tiendanube-mcp/credentials.json` (Windows: `%APPDATA%\tiendanube-mcp\credentials.json`) con permisos privados y las comparten ambos clientes. Mantené tokens, secretos y URLs de retorno fuera del chat, argumentos de comandos, registros y commits.
 
-- Brazil / Nuvemshop: add `--region nuvemshop`.
-- Optional contact for Tiendanube (a good habit, not required): `--user-agent "MyStore (owner@email.com)"`.
-- Keep the token out of the process list: `--token-stdin` (pipe the token in) or set `TIENDANUBE_ACCESS_TOKEN` first.
+### 3A. Con ID de tienda y Access token (Ruta A)
 
-It saves the keys once to the user-level file `~/.config/tiendanube-mcp/credentials.json` (Windows: `%APPDATA%\tiendanube-mcp\`) with private permissions, and every AI app on the machine shares it. Then it checks the connection and prints the store name.
-
-### 3B. You have an App ID and an App secret (OAuth)
-
-1. Tell the person to set the app's **Redirect URL** to exactly `http://localhost:8765/callback`.
-2. Run, in the background (it waits for the person):
+Con terminal interactiva, ejecutá:
 
 ```bash
-npx -y github:fedeclavero/tiendanube-mcp login --client-id <APP_ID> --client-secret <APP_SECRET>
+TN configure --store-id STORE_ID
 ```
 
-3. It prints an authorization link and opens it. Make sure the person opens it and accepts. The command then finishes by itself: it exchanges the code, learns the Store ID, saves the token and the granted scopes, and verifies the connection.
-4. **Plan B**, if the portal does not accept `localhost` as redirect: set any redirect URL, accept the permissions, ask the person to paste you the full address the browser ended on (it contains `?code=...`, valid about 5 minutes) and run:
+(Agregá `--region nuvemshop` para Brasil.) El programa pide el token sin mostrarlo, lo guarda y verifica la conexión con la tienda. Si el agente cuenta con entrada privada por stdin, usá `--token-stdin --json`:
+- Linux/macOS: `printf '%s' "$TOKEN" | TN configure --store-id STORE_ID --token-stdin --json`
+- Windows PowerShell: `"$TOKEN" | & $TN configure --store-id STORE_ID --token-stdin --json`
+
+### 3B. Con App ID y App Secret (Ruta B, OAuth)
+
+En terminal interactiva, ejecutá:
 
 ```bash
-npx -y github:fedeclavero/tiendanube-mcp login --client-id <APP_ID> --client-secret <APP_SECRET> --redirect-url "<PASTED ADDRESS>"
+TN login --client-id APP_ID
 ```
 
-## Step 4. Register the connector in the person's AI app
+(Agregá `--region nuvemshop` para Brasil o `--redirect-uri URL` si usaste una URL propia.) El programa pide el App Secret sin mostrarlo, abre el navegador para autorizar la tienda, captura el retorno en localhost, canjea el código y guarda el token y los permisos.
 
-```bash
-npx -y github:fedeclavero/tiendanube-mcp install --client all
-```
+Si la URI no apunta a localhost o el puerto está ocupado:
+1. Ejecutá `TN login --client-id APP_ID --start --json` y guiá al vendedor para abrir `authorize_url` y aceptar todos los permisos.
+2. Ejecutá `TN login --finish` en una terminal interactiva para que ingrese la URL completa de retorno sin mostrarla (o usá `--redirect-stdin` desde un canal privado).
 
-`all` configures every supported app found on the machine. To target one: `--client claude-code` (or `claude-desktop`, `codex`, `gemini-cli`, `cursor`, `windsurf`, `vscode`, `opencode`, `antigravity`, `cline`; several with commas). List what exists with `... clients`. Never edit the config files by hand: the command merges without touching other servers, writes a timestamped backup next to the file, and is safe to repeat.
+## 4. Registrá el MCP en el cliente (nunca edites JSON/TOML a mano)
 
-| Client | What `install` does | Confidence |
-| --- | --- | --- |
-| Claude Code | runs `claude mcp add --scope user` (edits `~/.claude.json` if the CLI is missing) | documented |
-| Claude Desktop | `claude_desktop_config.json` | documented |
-| Codex (CLI / IDE / app) | `~/.codex/config.toml` table `mcp_servers.tiendanube`, 90 s startup timeout | documented |
-| Gemini CLI | `~/.gemini/settings.json` | documented |
-| Cursor | `~/.cursor/mcp.json` | documented |
-| Windsurf | `~/.codeium/windsurf/mcp_config.json` | documented |
-| VS Code (Copilot) | user `mcp.json`, key `servers` | documented |
-| OpenCode | `~/.config/opencode/opencode.json`, key `mcp` | documented |
-| Antigravity | `~/.gemini/config/mcp_config.json` | path from Google's codelab; stdio fields follow the common format, not confirmed in its own docs |
-| Cline | `cline_mcp_settings.json` in the VS Code extension storage | inferred from the extension layout |
-| Anything else | `install --client generic` prints a standard stdio snippet | works in any stdio MCP client |
+- Claude Code: `TN install --client claude-code --json`
+- Codex: `TN install --client codex --json`
+- Ambos: `TN install --client claude-code --client codex --json`
 
-Windows apps are configured with `cmd /c npx ...` automatically.
+El instalador conserva tus demás servidores y variables, migra instalaciones viejas de `npx` automáticamente, crea una copia de respaldo con fecha y verifica el arranque real por MCP (`stdio`) antes de escribir. Para registrar solo en un proyecto, agregá `--scope project`.
 
-## Step 5. Verify, restart, smoke test
+- Claude Code usa `~/.claude.json` o `$CLAUDE_CONFIG_DIR/.claude.json`.
+- Codex usa `~/.codex/config.toml` o `$CODEX_HOME/config.toml`.
 
-```bash
-npx -y github:fedeclavero/tiendanube-mcp doctor
-```
+## 5. Verificá y reiniciá
 
-It must start with `OK`. It lists the store, the active credentials (never the secret) and which read permissions are missing. Every problem comes with a `NEXT STEP:` line: **do it yourself**. Typical ones:
+1. En el JSON de `install`, verificá `ok: true`, `launch_check.ok: true` y `launch_check.tools: 198`.
+2. Ejecutá `TN doctor --json` y seguí cada `nextSteps` si algo falla (para verificar solo el estado local sin llamar a la API, usá `TN doctor --offline --json`).
+3. Pedile al usuario que **cierre por completo y vuelva a abrir** su cliente (Claude Code o la app de ChatGPT con Codex). En la nueva sesión llamá `tiendanube_start_here` y `tiendanube_store_get`. Si la sesión actual necesita reiniciarse para cargar las herramientas, dejá claro que el registro técnico quedó listo y la comprobación dentro del cliente sigue pendiente.
 
-- `401`: wrong or replaced token. Ask for a new one and re-run `configure`.
-- Missing permission (`403`): the person must tick all permissions in the app and you re-authorize (`login`, or copy the new token and `configure`). Scopes only apply to new tokens.
+## Modo HTTP (opcional, para conectores remotos HTTPS)
 
-Then tell the person to **fully close and reopen** their AI app (that is when it loads the connector). In the new session call `tiendanube_start_here`, then `tiendanube_store_get`. If you cannot restart the app yourself say: *"Everything is installed and checked. Reopen your AI app and ask: show my store info."*
+Para clientes que solo admiten MCP remoto por HTTPS a través de un túnel:
+1. Generá o consultá el token con `TN http-token --public-url https://<tu-tunel>` (o definí `MCP_AUTH_TOKEN`).
+2. Iniciá el servidor en loopback: `TN serve --transport http --port 3000 --allowed-host <tu-tunel>`.
+3. Conectá con cabecera `Authorization: Bearer <token>` en `/mcp` o la URL `/mcp/<token>`. El transporte HTTP bloquea la lectura de archivos locales por seguridad.
 
-## Step 6. Report back
+## Después de instalar: cómo usar el MCP
 
-Short summary: what you installed, which apps you configured, the store name, that the connector can read **and write** (the default; `configure --read-only` switches to look-only if the person wants more safety), and three things to try, for example:
+1. Para cualquier tarea sobre la tienda usá las herramientas `tiendanube_*`, **nunca el navegador ni el panel de administración**.
+2. Empezá por `tiendanube_start_here`; si no sabés qué herramienta usar, `tiendanube_find_tool`; para tareas de varios pasos, `tiendanube_get_recipe`; último recurso, `tiendanube_api_request`.
+3. Combos desde productos existentes: `tiendanube_create_combo` (podés generar una imagen con tu propia herramienta y pasar la ruta en `image_files`).
+4. Antes de borrar o modificar muchos registros, informá qué vas a cambiar y cuántos elementos afecta, y esperá confirmación del dueño de la tienda.
 
-- "Show my 10 latest orders and which ones still have to be shipped."
-- "Which products have less than 5 units in stock?"
-- "Create two combos with products I already have, with a nice image for each."
+## Si algo falla
 
-## Clients that cannot run a local program (ChatGPT)
+| Síntoma | Qué hacer |
+| --- | --- |
+| 401 | Token inválido o revocado: repetí `TN login` o `TN configure` |
+| 403 o falta permiso | El error indica el scope; activá todos los permisos en la app, reinstalá/reautorizá y repetí `TN login` o `TN configure` |
+| `tiendanube-mcp` no encontrado | Paso 1 |
+| El cliente no ve el MCP | Cerrá y abrí el cliente por completo; ejecutá `TN doctor` |
+| Puerto 8765 ocupado | Usá `--port OTRO_PUERTO` o `TN login --start` + `TN login --finish` |
 
-ChatGPT custom connectors only talk to a **remote HTTPS** MCP server; they cannot start a local process. Codex (CLI, IDE or app), Claude, Gemini CLI, Cursor and the others above can: use `install` for those. For ChatGPT:
-
-```bash
-TRANSPORT=http MCP_AUTH_TOKEN=<long random string> npx -y github:fedeclavero/tiendanube-mcp
-```
-
-Expose `http://127.0.0.1:3000` through an HTTPS tunnel (for example `cloudflared tunnel --url http://127.0.0.1:3000` or ngrok) and add a connector in ChatGPT's developer mode with the URL `https://<tunnel host>/mcp/<MCP_AUTH_TOKEN>`. The server refuses every request without the token (header `Authorization: Bearer <token>`, or the token at the end of the path for clients that cannot send headers). **Treat that URL like a password**, and stop the tunnel when it is not in use. Honest limits: this route depends on ChatGPT's current connector availability for the person's plan, it has not been tested against ChatGPT here, and file paths given to the image upload tools refer to the computer running the server.
-
-## After installing: how to USE it (rules for you, the agent)
-
-1. For anything about the store, **call this server's tools**. Never use a browser, `agent-browser`, screenshots or the admin panel: that is 50x slower and breaks.
-2. Start with `tiendanube_start_here`. Not sure which tool? `tiendanube_find_tool` with a plain-language query. Multi-step job? `tiendanube_get_recipe`.
-3. Combos / packs from existing products: `tiendanube_create_combo`. Generate the picture with your own image tool, save it to a file, pass the path in `image_files`.
-4. No tool for what you need? `tiendanube_api_request`. Something fails? Read the `Next step:` at the end of the error; for setup problems call `tiendanube_doctor`.
-5. Before deleting or changing many records, say what you will do and how many, and continue when the person agrees.
-
-## If something fails
-
-[TROUBLESHOOTING.md](TROUBLESHOOTING.md). For a bug in the server, suggest an issue at <https://github.com/fedeclavero/tiendanube-mcp/issues> (remove tokens before pasting).
+Más detalles en [TROUBLESHOOTING.md](TROUBLESHOOTING.md).

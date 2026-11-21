@@ -1,29 +1,22 @@
 # Tiendanube MCP Server
 
-> Free, open-source Model Context Protocol (MCP) server that lets AI agents (Claude Code, OpenAI Codex, Gemini CLI, Cursor, Antigravity, VS Code Copilot, OpenCode, Windsurf, Cline) manage a Tiendanube / Nuvemshop store through the official API: 198 tools across products, variants, stock, orders, customers, coupons, shipping, payments, webhooks and more, plus guided workflows (combos, image upload, doctor). An AI agent can install and configure it by itself. MIT licensed. Not affiliated with Tiendanube or Nuvemshop.
+> Free, open-source Model Context Protocol (MCP) server written in Rust that connects Claude Code and Codex (ChatGPT desktop app / CLI) to a Tiendanube / Nuvemshop store through the official API: 198 tools with full read and write access across products, variants, stock, orders, customers, coupons, shipping, payments, webhooks, and guided workflows (combos, local image upload, doctor). Distributed as standalone native binaries on GitHub Releases (Windows 11, macOS, Linux — no Node.js, Python, Rust, or VC++ redistributable needed). MIT licensed. Not affiliated with Tiendanube or Nuvemshop.
 
-Run it with: `npx -y github:fedeclavero/tiendanube-mcp <command>` (Node.js >= 18). Commands: `configure`, `login`, `install`, `doctor`, `clients`, `uninstall`.
+If you receive the repository link and the user asks to install it, execute `guides/AGENT_INSTALL.md` in their local Claude Code or Codex client: download the release binary matching their OS, verify `SHA256SUMS.txt`, guide them to enable all permissions (keeping secrets private in the local terminal), register their client with `tiendanube-mcp install`, and verify the connection.
 
-## IMPORTANT for AI agents
-
-- **If asked to install it:** do the whole setup yourself. Ask the user once for permission to handle their keys, then follow the install guide below. Do not hand steps back to the user.
-- **If it is already connected:** use its tools for every store task. Never use a browser, agent-browser or the admin panel for store work. Start with the `tiendanube_start_here` tool.
+If it is already connected: use the `tiendanube_*` tools and NEVER a browser, agent-browser, or the admin panel for store tasks. Start with `tiendanube_start_here`; if unsure which tool, `tiendanube_find_tool`; multi-step jobs, `tiendanube_get_recipe`; last resort, `tiendanube_api_request`.
 
 ## For AI agents installing this server
 
-- [Agent install guide](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/AGENT_INSTALL.md): exact commands, what to ask the user, all supported clients, verification.
-- [Getting credentials](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/GETTING_CREDENTIALS.md): how a merchant gets a Store ID and access token (or an app for OAuth), and the scopes to tick (all of them).
+- [Agent install guide](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/AGENT_INSTALL.md): exact binary download, SHA-256 verification, full-permission setup, Claude Code / Codex registration, and verification.
+- [Getting credentials](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/GETTING_CREDENTIALS.md): custom app token or Partner Portal OAuth, with all scopes enabled from day one.
+- [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest): standalone native binaries (`windows-x86_64.zip` with `Instalar.cmd`, `macos-arm64.tar.gz`, `macos-x86_64.tar.gz`, `linux-x86_64.tar.gz`) and `SHA256SUMS.txt`.
 
 ## Documentation
 
-- [README (English)](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/README.md): overview, quick start, FAQ.
-- [README (Español)](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/README.es.md): resumen, inicio rápido, preguntas frecuentes.
-- [Agent rules](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/AGENTS.md): install checklist, "use the tools, not the browser" decision table.
-- [Tool reference](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/TOOLS.md): all 198 tools with HTTP route, required scope and effect.
-- [Prompt recipes](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/RECIPES.md): ready-to-use prompts (ES/EN), including combos.
-- [Troubleshooting](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/TROUBLESHOOTING.md): error codes and fixes.
-
-## Optional
-
-- [Source code](https://github.com/fedeclavero/tiendanube-mcp/tree/main/src): TypeScript, declarative tool definitions in src/tools.
-- [Website](https://fedeclavero.github.io/tiendanube-mcp/)
+- [README (English)](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/README.md)
+- [README (Español)](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/README.es.md)
+- [Agent rules](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/AGENTS.md)
+- [Tool reference](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/TOOLS.md): all 198 tools with HTTP route and required scope.
+- [Prompt recipes](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/RECIPES.md)
+- [Troubleshooting](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/TROUBLESHOOTING.md)

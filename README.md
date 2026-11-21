@@ -1,107 +1,73 @@
-# Tiendanube MCP Server — manage your Tiendanube / Nuvemshop store with Claude, Codex, OpenCode and any AI agent
+# Tiendanube MCP Server
+
+**Want your AI to install it?** Paste this message into **Claude Code** or **Codex** on your computer:
+
+> Install the Tiendanube MCP server in the client I am using and verify the connection. https://github.com/fedeclavero/tiendanube-mcp
+
+**For the agent.** Read and execute the [agent install guide](guides/AGENT_INSTALL.md). Identify which client received the request (`claude-code` or `codex`) and use the native binary from GitHub Releases. If GitHub serves a cached view, use the [plain-text guide](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/AGENT_INSTALL.md).
 
 [![CI](https://github.com/fedeclavero/tiendanube-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/fedeclavero/tiendanube-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![MCP](https://img.shields.io/badge/Model%20Context%20Protocol-server-blue)](https://modelcontextprotocol.io)
-[![Node](https://img.shields.io/badge/node-%E2%89%A518-brightgreen)](https://nodejs.org)
 [![M8ven Score](https://m8ven.ai/badge/mcp/fedeclavero-tiendanube-mcp-15lqtn?v=28d7c213d8e8d5a5cf31a0c542a1a3b3)](https://m8ven.ai/mcp/fedeclavero-tiendanube-mcp-15lqtn?s=readme)
 
-**🇪🇸 [Leer en español](README.es.md)** · [Website](https://fedeclavero.github.io/tiendanube-mcp/) · [Tool reference](guides/TOOLS.md) · [Prompt recipes](guides/RECIPES.md)
+**🇪🇸 [Leer en español](README.es.md)** · [Website](https://fedeclavero.github.io/tiendanube-mcp/) · [Agent install guide](guides/AGENT_INSTALL.md) · [Tool reference](guides/TOOLS.md) · [Prompt recipes](guides/RECIPES.md)
 
-**`tiendanube-mcp` is a free, open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that connects AI assistants to the Tiendanube (Nuvemshop in Brazil) API.** Ask in plain language — *"which products have less than 5 units left?"*, *"raise all prices in the Summer category by 12%"*, *"which orders are paid but not shipped?"* — and your AI does the work through **198 tools** covering **39 API resources**: products, variants, stock, orders, customers, coupons, shipping, payments, webhooks and more, plus guided workflows such as building combos with images.
+**`tiendanube-mcp` is a free, open-source [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server written in Rust for Tiendanube and Nuvemshop merchants.** Connect **Claude Code** or **Codex in the ChatGPT desktop app** to your store and ask in plain language — *"which products have less than 5 units left?"*, *"raise all prices in the Summer category by 12%"*, *"which orders are paid but not shipped?"* — through **198 tools** covering **39 official API resources** plus guided workflows such as creating combos with local images.
 
-Works with **Claude Code, Claude Desktop, OpenAI Codex, Gemini CLI, Cursor, Google Antigravity, VS Code (Copilot), OpenCode, Windsurf, Cline** and any client that speaks MCP over stdio or HTTP. **An AI agent can install and configure it by itself**, even if you have never touched an API key.
-
-> **AI agents, read this first.** If you were asked to install this server, do the whole setup yourself following [guides/AGENT_INSTALL.md](guides/AGENT_INSTALL.md); do not hand steps back to the user. If it is already connected, **use its tools for every store task and never a browser or the admin panel**: start with the `tiendanube_start_here` tool.
-
-> **Not affiliated with Tiendanube or Nuvemshop.** Independent community project. Tiendanube and Nuvemshop are trademarks of their owners.
+> **Not affiliated with Tiendanube or Nuvemshop.** Independent open-source project. Tiendanube and Nuvemshop are trademarks of their owners.
 
 ---
 
-## Quick start (about 5 minutes)
+## Install
 
-**The easiest way: let your AI agent do everything.** Open your AI agent (Claude Code, Codex, Gemini CLI, Cursor, Antigravity, ...) and paste this single line:
+No Node.js, Python, Git, Rust, or Visual C++ Redistributable required. No admin privileges needed for the MCP.
 
-```text
-Install the Tiendanube MCP server by following https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/AGENT_INSTALL.md
-```
+- **Windows 11:** Install and open **Claude Code** or **the ChatGPT app with Codex** once. Download `tiendanube-mcp-windows-x86_64.zip` from [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest), click **Extract all**, and open **`Instalar.cmd`**. The guided wizard walks you through creating the store app with **full permissions**, saving credentials privately, and registering your chosen client.
+- **Linux and macOS:** Download and extract the binary for your platform from [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest) into a stable folder (such as `~/.local/bin`), then run `tiendanube-mcp onboard` (or paste the prompt at the top so your AI agent installs it for you).
+- **Upgrading from an earlier version:** Close your client and re-run `Instalar.cmd` (Windows) or `tiendanube-mcp install --client all` (Linux/macOS). Existing credentials in `~/.config/tiendanube-mcp/credentials.json` (`%APPDATA%\tiendanube-mcp\credentials.json` on Windows) are reused without rotating keys, and legacy `npx` registrations are migrated automatically.
 
-The agent asks your permission once to handle your keys, guides you click by click to create the app (ticking every permission), saves the keys, configures your AI app, verifies the connection and tells you when to restart it. You do not edit any file. Credentials background: [guides/GETTING_CREDENTIALS.md](guides/GETTING_CREDENTIALS.md).
-
-Then ask something:
-
-> "Show me my store info and the 10 most recent orders."
-
----
-
-## Manual install
-
-Requirement: **Node.js 18+**. Everything runs straight from GitHub; no global install needed.
+### Manual CLI commands
 
 ```bash
-# 1. save your keys once (Brazil / Nuvemshop: add --region nuvemshop)
-npx -y github:fedeclavero/tiendanube-mcp configure --store-id 123456 --token YOUR_ACCESS_TOKEN
-# 2. register it in every supported AI app found on this computer
-npx -y github:fedeclavero/tiendanube-mcp install --client all
-# 3. check everything; it prints exactly what to fix if something is wrong
-npx -y github:fedeclavero/tiendanube-mcp doctor
+# 1. Save credentials privately (interactive masked prompt; Brazil/Nuvemshop: add --region nuvemshop)
+tiendanube-mcp configure --store-id 123456
+# Or authorize a Partner Portal app via OAuth:
+tiendanube-mcp login --client-id APP_ID
+
+# 2. Register in Claude Code and/or Codex (preserves other servers, writes a backup, verifies stdio startup)
+tiendanube-mcp install --client claude-code --client codex
+
+# 3. Verify store connectivity and scopes
+tiendanube-mcp doctor
 ```
 
-Then fully close and reopen your AI app. With a partner app (OAuth) instead of a token: `npx -y github:fedeclavero/tiendanube-mcp login --client-id APP_ID --client-secret SECRET`.
-
-| `--client` | App | Notes |
-| --- | --- | --- |
-| `claude-code` | Claude Code | uses `claude mcp add --scope user` |
-| `claude-desktop` | Claude Desktop | |
-| `codex` | OpenAI Codex (CLI / IDE / app) | `~/.codex/config.toml` |
-| `gemini-cli` | Gemini CLI | |
-| `cursor`, `windsurf` | Cursor, Windsurf | |
-| `vscode` | VS Code (GitHub Copilot agent mode) | |
-| `opencode` | OpenCode | |
-| `antigravity` | Google Antigravity | config path from Google's codelab; stdio fields follow the common format |
-| `cline` | Cline (VS Code) | path inferred from the extension layout |
-| `generic` | any other stdio client | prints a snippet to paste |
-
-`all` configures every app it finds; separate several with commas. `clients` lists what is detected. The command merges without touching your other servers, keeps a timestamped backup and is safe to repeat. The keys live in `~/.config/tiendanube-mcp/credentials.json` (Windows: `%APPDATA%\tiendanube-mcp\`), private to your user, so client configs contain no secrets.
-
-Generic stdio config for any other MCP client:
-
-```json
-{ "mcpServers": { "tiendanube": { "command": "npx", "args": ["-y", "github:fedeclavero/tiendanube-mcp"] } } }
-```
-
-**ChatGPT** connectors only accept a remote HTTPS server (no local programs): see "Clients that cannot run a local program" in [guides/AGENT_INSTALL.md](guides/AGENT_INSTALL.md). Codex does run local servers, use `--client codex`.
-
-> **First run is slower** (npm downloads and builds the project, ~30 s). The `configure` command above already warms it up.
+Then fully close and reopen your AI client and ask it to call `tiendanube_start_here` and `tiendanube_store_get`.
 
 ### Environment variables (optional)
 
-The saved credentials file is enough. Environment variables override it when set.
+Saved credentials in `~/.config/tiendanube-mcp/credentials.json` (`%APPDATA%\tiendanube-mcp\credentials.json` on Windows) are enough and shared across clients. Environment variables override them when set.
 
-| Variable | Required | Description |
-| --- | :---: | --- |
-| `TIENDANUBE_STORE_ID` | | Numeric store ID (the `user_id` returned by OAuth) |
-| `TIENDANUBE_ACCESS_TOKEN` | | Store access token |
-| `TIENDANUBE_USER_AGENT` | | `AppName (contact@domain.com)`; a sensible default is used |
-| `TIENDANUBE_READ_ONLY` | | `true` → registers only the read tools (83). Default: read and write |
-| `TIENDANUBE_API_DOMAIN` | | `https://api.tiendanube.com` (default, Spanish-speaking LatAm) or `https://api.nuvemshop.com.br` (Brazil) |
-| `TIENDANUBE_API_VERSION` | | Default `2025-03` |
-| `TIENDANUBE_CLIENT_ID` / `TIENDANUBE_CLIENT_SECRET` | | Only for the OAuth helper tool |
-| `TRANSPORT`, `PORT`, `HOST` | | `TRANSPORT=http` → streamable HTTP on `127.0.0.1:3000/mcp` (default: stdio) |
-| `MCP_AUTH_TOKEN` | | HTTP mode only: required secret (a random one is generated and printed if unset) |
-| `TIENDANUBE_MCP_HOME` | | Folder for the credentials file (default `~/.config/tiendanube-mcp`) |
+| Variable | Description |
+| --- | --- |
+| `TIENDANUBE_STORE_ID` | Numeric store ID (`user_id` returned by OAuth) |
+| `TIENDANUBE_ACCESS_TOKEN` | Store access token |
+| `TIENDANUBE_USER_AGENT` | `AppName (contact@domain.com)`; a sensible default is used |
+| `TIENDANUBE_API_DOMAIN` | `https://api.tiendanube.com` (default, Spanish-speaking LatAm) or `https://api.nuvemshop.com.br` (Brazil) |
+| `TIENDANUBE_API_VERSION` | Default `2025-03` |
+| `TIENDANUBE_CLIENT_ID` / `TIENDANUBE_CLIENT_SECRET` | Partner app credentials for `tiendanube-mcp login` |
+| `TIENDANUBE_MCP_HOME` | Custom private directory for credentials and HTTP token |
+| `TRANSPORT`, `HOST`, `PORT`, `ALLOWED_HOSTS`, `MCP_AUTH_TOKEN` | Streamable HTTP mode (`TRANSPORT=http` or `tiendanube-mcp serve --transport http`, loopback only, token required) |
 
 ---
 
 ## What can you ask?
 
-Instead of clicking through the admin panel or exporting spreadsheets, you say the job and the AI picks the tools.
-
 | You say | The AI uses |
 | --- | --- |
 | "List products with stock below 5, cheapest first" | `tiendanube_products_list` |
 | "Set the stock of SKU `REM-001-M` to 40" | `tiendanube_products_get_by_sku` → `tiendanube_variants_update_stock` |
-| "Build two combos with products I already sell, with a nice image each" | `tiendanube_create_combo` (+ your own image tool → `image_files`) |
+| "Build two combos with products I already sell, with a nice image each" | `tiendanube_create_combo` (+ your image tool → `image_files`) |
 | "Apply 10% off to the whole 'Verano' category" | `tiendanube_products_list` → `tiendanube_products_batch_stock_price` |
 | "Which paid orders from this week haven't shipped?" | `tiendanube_orders_list` |
 | "Mark order #1042 as dispatched with tracking code XYZ" | `tiendanube_fulfillment_orders_update` |
@@ -124,60 +90,47 @@ More than 20 copy-paste prompts in [guides/RECIPES.md](guides/RECIPES.md).
 | Payments & billing | 25 | Payment providers/options, transactions, disputes, external invoices, app billing |
 | Content | 15 | Pages, blog, email templates, scripts |
 | Extensibility | 35 | Metafields, custom fields, custom objects, webhooks (36 events) |
-| Guide & workflows | 8 | `tiendanube_start_here`, `tiendanube_find_tool`, `tiendanube_get_recipe`, `tiendanube_doctor`, `tiendanube_api_request`, `tiendanube_create_combo`, `tiendanube_product_image_add_from_file`, OAuth code exchange |
+| Guide & workflows | 8 | `tiendanube_start_here`, `tiendanube_find_tool`, `tiendanube_get_recipe`, `tiendanube_doctor`, `tiendanube_api_request`, `tiendanube_create_combo`, `tiendanube_product_image_add_from_file`, terminal OAuth helper |
 
-Full list with routes and required scopes: **[guides/TOOLS.md](guides/TOOLS.md)**. Also ships documentation resources (`tiendanube://docs/*`, `tiendanube://guide/*`).
+Full list with routes and required scopes: **[guides/TOOLS.md](guides/TOOLS.md)**. Also exposes MCP documentation resources (`tiendanube://docs/*`, `tiendanube://guide/*`).
 
-## Omnipotence and Plug & Play (Full Permissions)
+## Full access & security design
 
-- **Full permissions by design (Omnipotence)** — The core philosophy of this MCP is to give the AI total power to operate your store without artificial roadblocks or missing-permission errors. During setup, **ALL permissions must be requested and granted (complete read and write across the board)**: products, variants, inventory, orders, customers, coupons, promotions, shipping, content, and webhooks.
-- **100% Autonomous Plug & Play setup** — The merchant simply provides their access credentials (Store ID and Access Token / App Secret). If the user does not know how to obtain them, the AI agent guides them click by click; and if the user cannot or does not understand how to do it, **the AI agent itself takes the initiative using browser automation tools (agent-browser, Playwright, or browser navigation) to enter the Tiendanube admin/developer portal, create the application, and actively tick every single required read and write permission checkbox**. The merchant only logs in if prompted, and the connection is ready instantly.
-- **Honest annotations and safety guardrails** — Each tool declares if it is destructive so well-designed AI clients ask for confirmation before massive changes or deletes, without hampering general autonomous execution.
-- **Self-diagnosing** — If an existing app was created with partial scopes, the `doctor` command lists exactly what is missing to achieve full operational power.
-- **Your data stays yours** — Credentials live in a private user-level file on your machine (`~/.config/tiendanube-mcp/credentials.json`, 600 permissions) and are sent exclusively to Tiendanube's official API. No telemetry, no third-party servers.
-- **Rate-limit aware** — Follows leaky-bucket headers and handles 429 retries transparently.
-- *(Technical note: if someone explicitly requires look-only access, `configure --read-only` is available, but complete read and write access is the recommended and default standard).*
+- **Full permissions from day one** — All **198 tools** are enabled with full read and write access (there is no read-only mode). Setup guides you to enable **all available permissions** so you never hit 403 errors later.
+- **Secrets stay local** — Credentials live in a private user-level file (`0600` on Linux/macOS, user profile ACL on Windows), are entered privately in the terminal, and are never returned to the chat. OAuth runs locally via `tiendanube-mcp login`.
+- **Hardened transports** — Streamable HTTP binds to loopback only, validates `Host` and `Origin`, requires a Bearer or path token (`tiendanube-mcp http-token` or `MCP_AUTH_TOKEN`), and blocks local filesystem uploads (`image_files` / `file_path` work only over local `stdio`).
+- **Rate-limit aware & exact decimal math** — Follows Tiendanube's leaky-bucket headers, retries 429 on `GET` requests safely without duplicating writes, and calculates combo prices and weights with exact decimal arithmetic.
+- **Honest annotations & self-diagnosing** — Destructive tools are annotated as such so clients can ask for confirmation, and `tiendanube-mcp doctor` reports missing read or write scopes with concrete next steps.
 
 ## Honest limitations
 
-- Endpoints follow the official API reference; some request bodies (promotions, transactions, disputes, billing, custom objects, business rules) are passed as free-form JSON, so the AI should consult the reference for exact fields. Found a mismatch? [Open an issue](https://github.com/fedeclavero/tiendanube-mcp/issues).
-- Payment Provider and Shipping Carrier endpoints are meant for partner apps and may require approval from Tiendanube's platform team.
-- Access tokens can't list their own scopes; use the 403 messages to find what's missing.
-- Not published on npm yet — install from GitHub as shown above.
-
-## Alternatives
-
-Tiendanube also offers an official remote Admin MCP (see Tiendanube's help center for what it covers today). Community servers exist too ([ropu/MCP-tienda_nube](https://github.com/ropu/MCP-tienda_nube), [AlexandreProenca/nuvemshop-mcp-server](https://github.com/AlexandreProenca/nuvemshop-mcp-server)). This project is aimed at people who want a **self-hosted, scope-controlled server with broad API coverage** (including `unstable` resources) that they can read, fork and run locally.
+- Some complex bodies (promotions, transactions, disputes, billing, custom objects, business rules) are passed as free-form JSON according to the official API reference.
+- Payment Provider and Shipping Carrier endpoints are meant for partner apps and may require Tiendanube approval.
+- Custom-app access tokens do not report their write scopes; `doctor` probes read scopes and flags write scopes whenever OAuth reports them.
 
 ## FAQ
 
-**What is an MCP server?** A small program that lets an AI assistant call tools in another system. Here, the tools are the Tiendanube API operations.
+**What do I need on Windows 11?** Only **Claude Code** or **the ChatGPT desktop app with Codex**, a browser, and your Tiendanube/Nuvemshop store. The Windows ZIP is standalone and needs no runtimes or admin rights.
 
-**Does it work with Nuvemshop (Brazil)?** Yes. Set `TIENDANUBE_API_DOMAIN=https://api.nuvemshop.com.br`.
+**Does it work with Nuvemshop (Brazil)?** Yes. Pass `--region nuvemshop` during `configure`/`login`, or set `TIENDANUBE_API_DOMAIN=https://api.nuvemshop.com.br`.
 
-**Do I need to know how to code?** No. Paste the one-line install prompt into your AI agent; it handles the keys and the configuration for you. Credentials: [guides/GETTING_CREDENTIALS.md](guides/GETTING_CREDENTIALS.md).
+**Which permissions should I enable?** Enable **all** available read and write permissions when creating your app. Tiendanube permissions only apply to newly issued tokens. See [guides/GETTING_CREDENTIALS.md](guides/GETTING_CREDENTIALS.md#scopes).
 
-**Can the AI delete my products by mistake?** The tools can delete, and they are flagged destructive so well-behaved clients ask for confirmation; the agent rules also tell the AI to announce bulk changes first. If you prefer, switch to read-only with `configure --read-only`. Keep a backup of your catalog before bulk operations.
-
-**How much does it cost?** The server is free (MIT). You pay only for the AI service you already use. Tiendanube API access depends on your plan.
-
-**Which token scopes do I need?** Tick all of them when you create the app, so you never have to redo it (scopes only apply to new tokens). See the matrix in [guides/GETTING_CREDENTIALS.md](guides/GETTING_CREDENTIALS.md#scopes).
-
-**Is there an HTTP/remote mode?** Yes: `TRANSPORT=http` serves stateless streamable HTTP on `127.0.0.1` and always requires a token (`MCP_AUTH_TOKEN`). It exists for clients that cannot run local programs, such as ChatGPT connectors, through an HTTPS tunnel.
+**Is there an HTTP/remote mode?** Yes: `tiendanube-mcp serve --transport http` (or `TRANSPORT=http`) serves Streamable HTTP on `127.0.0.1` protected by a token (`tiendanube-mcp http-token` or `MCP_AUTH_TOKEN`). Local image file uploads are disabled over HTTP.
 
 ## Develop
 
 ```bash
-git clone https://github.com/fedeclavero/tiendanube-mcp.git
-cd tiendanube-mcp && npm install     # also builds
-npm test                              # offline tests: mocked API, installer in temp dirs
-npm run docs                          # regenerate guides/TOOLS.md
+cargo fmt --all -- --check
+cargo clippy --locked --all-targets -- -D warnings
+cargo test --locked --all-targets
+cargo build --locked --release
 ```
 
-Architecture: each tool is a declarative `EndpointDef` in [`src/tools/`](src/tools), turned into an MCP tool (Zod schema, annotations, error mapping) by [`registry.ts`](src/tools/registry.ts). See [CONTRIBUTING.md](CONTRIBUTING.md).
+Tests run offline against local mock servers and temp directories and never touch real store credentials. Run `tiendanube-mcp tools-doc > guides/TOOLS.md` to regenerate the tool reference. See [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md).
 
 ## Support the project
 
-If this saves you hours of copy-pasting prices or checking orders, **a ⭐ on GitHub** helps other Tiendanube merchants and developers find it. Bug reports and recipes you'd like to share are even better.
+If this saves you hours of managing prices, stock, or orders, a ⭐ on GitHub helps other Tiendanube merchants find it.
 
 MIT © [fedeclavero](https://github.com/fedeclavero)
