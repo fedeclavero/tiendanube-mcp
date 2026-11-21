@@ -1,13 +1,24 @@
-# Instalación para agentes de IA (ejecutala de punta a punta)
+# Instalación para agentes de IA (ejecutala completa por el usuario)
 
-Cuando el usuario comparta el enlace del repositorio y pida instalarlo, ejecutá esta guía en la computadora donde corre su cliente (**Claude Code** o **Codex en la app de ChatGPT**). `TN` representa la ruta absoluta de `tiendanube-mcp` en los ejemplos. En PowerShell podés guardar esa ruta en `$TN` e invocarla con `& $TN`. Hablá en el idioma del usuario.
+> **Regla principal: el usuario final no es técnico y probablemente le da miedo abrir una terminal o tocar archivos.** Vos, como agente de IA, hacés **todo el proceso de punta a punta** en su computadora (**Claude Code** o **Codex**). Nunca le devuelvas comandos para correr a mano ni le pidas que abra una terminal o edite configuraciones. Hablá en lenguaje simple y en el idioma del usuario.
 
-No hace falta instalar Node.js, Python, Git, Rust ni el redistribuible de Visual C++. El servidor se distribuye como un ejecutable nativo autónomo.
+`TN` representa la ruta absoluta de `tiendanube-mcp` en los ejemplos. En Windows PowerShell guardala en `$TN` e invocala con `& $TN`. No hace falta instalar Node.js, Python, Git, Rust ni el redistribuible de Visual C++.
 
-## 1. Elegí el cliente y descargá el binario
+## 0. Pedí permiso una sola vez y explicá cómo vas a trabajar
 
-1. Detectá si estás en **Claude Code** o **Codex**. Registrá ese cliente. Si el usuario eligió ambos, registrá ambos. Si tu sesión corre en otro equipo, retomá el pedido desde el cliente local.
-2. Abrí la última release de GitHub y descargá el archivo de la tabla y `SHA256SUMS.txt` del mismo tag. Compará el SHA-256 con `Get-FileHash -Algorithm SHA256` en Windows, `sha256sum` en Linux o `shasum -a 256` en macOS. [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest)
+Antes de empezar, decile algo como esto en lenguaje claro y esperá su confirmación:
+
+> *"Para conectar tu tienda de Tiendanube / Nuvemshop con **acceso completo** (lectura y escritura, así puedo ver y editar tus productos, precios, stock, pedidos, cupones y combos desde el primer momento), voy a guiarte paso a paso para obtener tus claves, te las voy a pedir, las voy a guardar en tu computadora y voy a configurar todo en tu app de IA. Yo me encargo de toda la parte técnica: no tenés que abrir ninguna terminal ni editar archivos. ¿Me das permiso para hacerlo?"*
+
+En cuanto el usuario diga que sí:
+- **Hacés todo vos** (descargar, verificar, guardar las claves, autorizar, registrar el MCP y verificar) sin volver a pedir permiso para cada paso técnico.
+- **Acceso completo desde el momento uno (NO existe modo solo lectura):** el vendedor quiere que puedas editar y administrar su tienda sin trabas. Asegurate de habilitar **todos los permisos disponibles (lectura y escritura en todo)** desde el principio, porque en Tiendanube los permisos solo aplican a tokens nuevos.
+- **Higiene básica:** nunca subas claves a Git, nunca las pegues en sitios públicos y no repitas tokens, secretos ni URLs de retorno en tu resumen final.
+
+## 1. Elegí el cliente y descargá el binario (lo hacés vos)
+
+1. Detectá si estás en **Claude Code** o **Codex**. Registrá ese cliente (o ambos si el usuario lo pide). Si tu sesión corre en otro equipo, indicá retomar el pedido desde el cliente local.
+2. Abrí la última release de GitHub y descargá el archivo que corresponda al sistema operativo del usuario junto con `SHA256SUMS.txt` del mismo tag. Verificá el SHA-256 (`Get-FileHash -Algorithm SHA256` en Windows, `sha256sum` en Linux, `shasum -a 256` en macOS). [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest)
 
 | Equipo | Archivo de la release |
 | --- | --- |
@@ -16,56 +27,85 @@ No hace falta instalar Node.js, Python, Git, Rust ni el redistribuible de Visual
 | macOS Intel | `tiendanube-mcp-macos-x86_64.tar.gz` |
 | Linux x86-64 | `tiendanube-mcp-linux-x86_64.tar.gz` |
 
-3. Extraé el archivo. En Windows usá `Expand-Archive` y guardá `tiendanube-mcp.exe` en `%LOCALAPPDATA%\Programs\tiendanube-mcp`. En macOS o Linux usá `tar -xzf` y guardá el binario en `~/.local/bin` (con permiso de ejecución). Conservá esa ubicación estable para que el cliente pueda iniciarlo y verificá con `TN --version`. El ZIP de Windows también incluye `Instalar.cmd` para instalación interactiva con doble clic.
-4. Si ya existe una instalación autorizada, **reutilizá sus credenciales sin rotarlas ni volver a pedirlas**. Ejecutá `TN doctor --offline --json` para revisar el estado local. Si las credenciales ya están guardadas y no faltan permisos de escritura, pasá directo al paso 4.
+3. Extraé el archivo y guardá el ejecutable en una ubicación fija:
+   - Windows: `%LOCALAPPDATA%\Programs\tiendanube-mcp\tiendanube-mcp.exe` (usá `Expand-Archive`; el ZIP también trae `Instalar.cmd` para instalación con doble clic).
+   - macOS / Linux: `~/.local/bin/tiendanube-mcp` (usá `tar -xzf` y `chmod +x`).
+   Verificá con `TN --version`.
+4. **Si ya existe una instalación autorizada, no rotes ni cambies sus claves:** ejecutá `TN doctor --offline --json`. Si las credenciales ya están guardadas y no faltan permisos de escritura, pasá directo al paso 4.
 
-## 2. Conseguí las credenciales con TODOS los permisos
+## 2. Guiá paso a paso para obtener las credenciales (con TODOS los permisos)
 
-El servidor opera siempre con **acceso completo de lectura y escritura** (no existe modo solo lectura). Desde el primer momento debés guiar al vendedor para habilitar **todos los permisos disponibles** (lectura y escritura en todos los recursos), porque los permisos de Tiendanube solo aplican a tokens nuevos. Detalles en [GETTING_CREDENTIALS.md](GETTING_CREDENTIALS.md).
+Preguntale si la tienda es de Brasil / Nuvemshop (en ese caso agregá `--region nuvemshop` en el paso 3). Guialo clic por clic en palabras simples — y si tenés herramienta de navegador y al usuario le cuesta, podés acompañarlo en el navegador (el usuario completa su inicio de sesión y doble factor, y revisan juntos que todos los permisos queden marcados antes de guardar). Más detalle en [GETTING_CREDENTIALS.md](GETTING_CREDENTIALS.md).
 
-Elegí la ruta según el plan de la tienda (preguntá también si la tienda es de Brasil / Nuvemshop para pasar `--region nuvemshop`):
+### Ruta A (la más simple): aplicación a medida desde el panel de la tienda
+1. Entrar al panel de administración de Tiendanube / Nuvemshop → **Configuraciones → Aplicaciones a medida** y crear una aplicación para Tiendanube MCP.
+2. En **Perfiles de acceso**, elegir **Acceso total** (o tildar **TODOS los permisos de lectura y escritura sin excepción**).
+3. Guardar la aplicación y tocar **Revelar** para copiar el **Access token** (Tiendanube lo muestra completo una sola vez).
+4. Pedile al usuario que te copie y pegue acá el **ID de la tienda** y el **Access token**, aclarándole que vos los vas a guardar en su computadora ahora mismo.
 
-### Ruta A (más simple): aplicación a medida desde el panel de la tienda
-1. Abrí el panel de administración de Tiendanube/Nuvemshop → **Configuraciones → Aplicaciones a medida** y creá una aplicación para Tiendanube MCP.
-2. En **Perfiles de acceso**, elegí **Acceso total** (o tildá **todos los permisos de lectura y escritura sin excepción**). Guardá la aplicación y tocá **Revelar** para ver el token (Tiendanube lo muestra completo una sola vez).
-3. El usuario completa su inicio de sesión y doble factor. Si acompañás la creación desde el navegador, revisá con el usuario que todos los permisos estén marcados antes de guardar.
-4. Pedile el **ID de la tienda** y guardá las credenciales en el paso 3A.
+### Ruta B (cualquier plan): aplicación del Portal de Partners con OAuth 2.0
+1. Abrir `https://partners.tiendanube.com/` (o `https://partners.nuvemshop.com.br/` en Brasil) y crear o editar la aplicación.
+2. En **Datos básicos**, activar **todos los permisos disponibles de lectura y escritura** sin dejar ninguno sin marcar (si la app ya estaba instalada en la tienda, habrá que reinstalarla para emitir un token con los permisos nuevos).
+3. En **URL de redirección**, escribir exactamente `http://localhost:8765/callback` (o una URL HTTPS propia si el portal no admite retorno local).
+4. Pedile al usuario el **App ID** y el **App Secret**, aclarándole que vos vas a encargarte de completar la conexión.
 
-### Ruta B: aplicación del Portal de Partners con OAuth 2.0
-1. Abrí `https://partners.tiendanube.com/` (o `https://partners.nuvemshop.com.br/` en Brasil) y creá o editá tu aplicación.
-2. En **Datos básicos**, habilitá **todos los permisos disponibles con lectura y escritura**. Si la app ya estaba instalada en la tienda, habrá que reinstalarla para emitir un token con los permisos nuevos.
-3. Registrá como **URL de redirección** exactamente `http://localhost:8765/callback` (o una URL HTTPS bajo tu control si el portal no admite retorno local).
-4. Copiá el **App ID** y el **App Secret** y seguí en el paso 3B.
+## 3. Guardá las credenciales vos mismo (sin que el usuario abra ninguna terminal)
 
-## 3. Guardá las credenciales (en privado, nunca en el chat ni argumentos)
-
-Las credenciales se guardan una sola vez en `~/.config/tiendanube-mcp/credentials.json` (Windows: `%APPDATA%\tiendanube-mcp\credentials.json`) con permisos privados y las comparten ambos clientes. Mantené tokens, secretos y URLs de retorno fuera del chat, argumentos de comandos, registros y commits.
+Las credenciales se guardan una sola vez en `~/.config/tiendanube-mcp/credentials.json` (Windows: `%APPDATA%\tiendanube-mcp\credentials.json`) con permisos privados y las comparten ambos clientes.
 
 ### 3A. Con ID de tienda y Access token (Ruta A)
 
-Con terminal interactiva, ejecutá:
+Guardalos vos ejecutando `TN configure` pasando el token por stdin desde una variable temporal (y limpiala enseguida; agregá `--region nuvemshop` para Brasil):
 
-```bash
-TN configure --store-id STORE_ID
-```
+- **Linux / macOS:**
+  ```bash
+  TOKEN='<ACCESS_TOKEN>'
+  printf '%s' "$TOKEN" | TN configure --store-id STORE_ID --token-stdin --json
+  unset TOKEN
+  ```
+- **Windows PowerShell:**
+  ```powershell
+  $TOKEN = '<ACCESS_TOKEN>'
+  $TOKEN | & $TN configure --store-id STORE_ID --token-stdin --json
+  Remove-Variable TOKEN
+  ```
 
-(Agregá `--region nuvemshop` para Brasil.) El programa pide el token sin mostrarlo, lo guarda y verifica la conexión con la tienda. Si el agente cuenta con entrada privada por stdin, usá `--token-stdin --json`:
-- Linux/macOS: `printf '%s' "$TOKEN" | TN configure --store-id STORE_ID --token-stdin --json`
-- Windows PowerShell: `"$TOKEN" | & $TN configure --store-id STORE_ID --token-stdin --json`
+Comprobá `"ok": true`. Nunca repitas el token en tu respuesta al usuario ni lo guardes en archivos del proyecto.
 
 ### 3B. Con App ID y App Secret (Ruta B, OAuth)
 
-En terminal interactiva, ejecutá:
+- **Con retorno local (`http://localhost:8765/callback`):** ejecutá `TN login` en segundo plano o con tiempo de espera de 5 minutos pasando el App Secret por stdin (agregá `--region nuvemshop` para Brasil):
+  - Linux / macOS:
+    ```bash
+    SECRET='<APP_SECRET>'
+    printf '%s' "$SECRET" | TN login --client-id APP_ID --client-secret-stdin --json
+    unset SECRET
+    ```
+  - Windows PowerShell:
+    ```powershell
+    $SECRET = '<APP_SECRET>'
+    $SECRET | & $TN login --client-id APP_ID --client-secret-stdin --json
+    Remove-Variable SECRET
+    ```
+  Avisale al usuario: *"Se abrió la página oficial de Tiendanube para autorizar tu tienda. Iniciá sesión y tocá Aceptar."* El programa recibe la respuesta, canjea el código y guarda el token solo.
 
-```bash
-TN login --client-id APP_ID
-```
-
-(Agregá `--region nuvemshop` para Brasil o `--redirect-uri URL` si usaste una URL propia.) El programa pide el App Secret sin mostrarlo, abre el navegador para autorizar la tienda, captura el retorno en localhost, canjea el código y guarda el token y los permisos.
-
-Si la URI no apunta a localhost o el puerto está ocupado:
-1. Ejecutá `TN login --client-id APP_ID --start --json` y guiá al vendedor para abrir `authorize_url` y aceptar todos los permisos.
-2. Ejecutá `TN login --finish` en una terminal interactiva para que ingrese la URL completa de retorno sin mostrarla (o usá `--redirect-stdin` desde un canal privado).
+- **Plan B (si la URI no apunta a localhost o el puerto 8765 está ocupado):**
+  1. Ejecutá `TN login --client-id APP_ID --redirect-uri URI_EXACTA --start --json` y pasale al usuario el enlace `authorize_url` para que acepte todos los permisos.
+  2. Pedile que te copie la **dirección completa (URL)** que quedó en la barra del navegador (aunque la página diga que no carga) y completalo vos pasando el App Secret por variable de entorno temporal y la URL por stdin (limpiando ambas al terminar):
+     - Linux / macOS:
+       ```bash
+       RET='<URL_COMPLETA>'
+       TIENDANUBE_CLIENT_SECRET='<APP_SECRET>' printf '%s' "$RET" | TIENDANUBE_CLIENT_SECRET='<APP_SECRET>' TN login --finish --redirect-stdin --json
+       unset RET
+       ```
+     - Windows PowerShell:
+       ```powershell
+       $env:TIENDANUBE_CLIENT_SECRET = '<APP_SECRET>'
+       $RET = '<URL_COMPLETA>'
+       $RET | & $TN login --finish --redirect-stdin --json
+       Remove-Item Env:TIENDANUBE_CLIENT_SECRET
+       Remove-Variable RET
+       ```
 
 ## 4. Registrá el MCP en el cliente (nunca edites JSON/TOML a mano)
 
@@ -73,16 +113,15 @@ Si la URI no apunta a localhost o el puerto está ocupado:
 - Codex: `TN install --client codex --json`
 - Ambos: `TN install --client claude-code --client codex --json`
 
-El instalador conserva tus demás servidores y variables, migra instalaciones viejas de `npx` automáticamente, crea una copia de respaldo con fecha y verifica el arranque real por MCP (`stdio`) antes de escribir. Para registrar solo en un proyecto, agregá `--scope project`.
-
+El instalador conserva tus otros servidores, migra instalaciones viejas de `npx` automáticamente, guarda una copia de respaldo con fecha y verifica el arranque real por MCP (`stdio`) antes de escribir. Para un solo proyecto, agregá `--scope project`.
 - Claude Code usa `~/.claude.json` o `$CLAUDE_CONFIG_DIR/.claude.json`.
 - Codex usa `~/.codex/config.toml` o `$CODEX_HOME/config.toml`.
 
-## 5. Verificá y reiniciá
+## 5. Verificá y avisale al usuario qué hacer ahora
 
 1. En el JSON de `install`, verificá `ok: true`, `launch_check.ok: true` y `launch_check.tools: 198`.
-2. Ejecutá `TN doctor --json` y seguí cada `nextSteps` si algo falla (para verificar solo el estado local sin llamar a la API, usá `TN doctor --offline --json`).
-3. Pedile al usuario que **cierre por completo y vuelva a abrir** su cliente (Claude Code o la app de ChatGPT con Codex). En la nueva sesión llamá `tiendanube_start_here` y `tiendanube_store_get`. Si la sesión actual necesita reiniciarse para cargar las herramientas, dejá claro que el registro técnico quedó listo y la comprobación dentro del cliente sigue pendiente.
+2. Ejecutá `TN doctor --json` y resolvé vos mismo cada `nextSteps` si algo falla (para verificar solo el estado local sin llamar a la API, usá `TN doctor --offline --json`).
+3. Avisale al usuario en lenguaje claro que **cierre por completo y vuelva a abrir** su app de IA (Claude Code o la app de ChatGPT con Codex). En la nueva sesión llamá `tiendanube_start_here` y `tiendanube_store_get`. Si la sesión actual necesita reiniciarse para cargar las herramientas, dejá claro que la instalación y verificación técnica quedaron listas y solo falta reiniciar para probarlo desde el chat.
 
 ## Modo HTTP (opcional, para conectores remotos HTTPS)
 
@@ -100,12 +139,12 @@ Para clientes que solo admiten MCP remoto por HTTPS a través de un túnel:
 
 ## Si algo falla
 
-| Síntoma | Qué hacer |
+| Síntoma | Qué hacer (lo resolvés vos) |
 | --- | --- |
-| 401 | Token inválido o revocado: repetí `TN login` o `TN configure` |
-| 403 o falta permiso | El error indica el scope; activá todos los permisos en la app, reinstalá/reautorizá y repetí `TN login` o `TN configure` |
+| 401 | Token inválido o revocado: pedir uno nuevo y repetir `TN configure` o `TN login` |
+| 403 o falta permiso | El error indica el scope; guiar al usuario para activar todos los permisos en la app, reinstalar/reautorizar y repetir `TN login` o `TN configure` |
 | `tiendanube-mcp` no encontrado | Paso 1 |
-| El cliente no ve el MCP | Cerrá y abrí el cliente por completo; ejecutá `TN doctor` |
-| Puerto 8765 ocupado | Usá `--port OTRO_PUERTO` o `TN login --start` + `TN login --finish` |
+| El cliente no ve el MCP | Reinicio completo del cliente; correr `TN doctor --json` |
+| Puerto 8765 ocupado | Usar `--port OTRO_PUERTO` o Plan B (`TN login --start --json` + `--finish --redirect-stdin`) |
 
 Más detalles en [TROUBLESHOOTING.md](TROUBLESHOOTING.md).

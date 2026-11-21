@@ -18,7 +18,7 @@ Pensada para conectar **tu propia tienda**. No hace falta programar ni ser partn
 2. Andá a **Configuraciones → Aplicaciones a medida** y creá una aplicación nueva. Guía oficial: [Cómo crear una aplicación a medida y acceder al token](https://ayuda.tiendanube.com/es_ES/aplicaciones-a-medida/como-crear-una-aplicacion-a-medida-y-acceder-al-token-en-mi-tiendanube).
 3. **Tildá TODOS los permisos** de la lista (lectura y escritura de todo, sin excepción).
    - *Nota para agentes de IA con navegador:* Si el usuario no comprende o no puede realizar estos pasos, usá tu herramienta de navegador para abrir el panel, crear la app y tildar activamente todos y cada uno de los permisos de lectura y escritura por él (Plug & Play total).
-4. Copiá el **ID de la tienda** y el **Access token** e ingresalos en privado en la terminal con `tiendanube-mcp configure --store-id <ID>` (o desde `Instalar.cmd` / `tiendanube-mcp onboard`). El programa pide el token sin mostrarlo y lo guarda localmente.
+4. Copiá el **ID de la tienda** y el **Access token** y pasáselos a tu asistente de IA: él los guarda localmente por vos sin que tengas que abrir ninguna terminal (si instalás a mano en Windows, ingresalos en `Instalar.cmd`).
 
 > Según la ayuda de Tiendanube, esta opción está disponible en ciertos planes. Si no ves el menú, revisá tu plan o usá la Opción B.
 
@@ -29,8 +29,8 @@ Sirve en cualquier plan y para varias tiendas.
 1. Creá una aplicación en el **Portal de Partners** de Tiendanube (`partners.tiendanube.com`). En **Datos básicos** (*Basic Data*) tildá **todos los scopes**.
 2. En la configuración de URLs de la app, poné como **URL de redirección** exactamente `http://localhost:8765/callback`. (La documentación de Tiendanube no aclara si el portal acepta `localhost`; si no lo acepta, usá el plan B de abajo.) No dejes la URL por defecto: lleva a un login de partners.
 3. Copiá el **App ID** y el **App secret** de la app (aparecen en los datos de la app en el portal; el App ID también es el número que va en el link de autorización).
-4. Ejecutá `tiendanube-mcp login --client-id <APP_ID>` en una terminal local (el programa pide el App secret sin mostrarlo), abrí el enlace, aceptá todos los permisos y listo: el token y el ID de tienda se guardan solos.
-5. **Plan B** (si el portal no acepta `localhost`): ejecutá `tiendanube-mcp login --client-id <APP_ID> --redirect-uri <TU_URL> --start`, aceptá los permisos y completá con `tiendanube-mcp login --finish` pegando en la terminal la dirección completa en la que terminó el navegador (sin mostrarla).
+4. Pasale el **App ID** y el **App secret** a tu asistente de IA: él corre `tiendanube-mcp login` por vos, te abre el enlace, vos aceptás todos los permisos y el token + ID de tienda se guardan solos.
+5. **Plan B** (si el portal no acepta `localhost`): tu asistente te da el enlace con `login --start`, vos aceptás los permisos y le copiás la dirección completa en la que terminó el navegador para que él complete la conexión con `login --finish`.
 
 Si después cambiás los scopes de la app, hay que **reinstalarla** en la tienda para recibir un token nuevo; tu asistente repite `login`.
 
@@ -65,7 +65,7 @@ Meant for connecting **your own store**. No coding or partner registration neede
 1. Open your store's **admin panel**.
 2. Go to **Settings → Custom apps** (*Configuraciones → Aplicaciones a medida*) and create a new app. Official guide (Spanish): [How to create a custom app and get the token](https://ayuda.tiendanube.com/es_ES/aplicaciones-a-medida/como-crear-una-aplicacion-a-medida-y-acceder-al-token-en-mi-tiendanube).
 3. **Tick ALL the permissions** in the list (read and write for everything).
-4. Copy the **Store ID** and **Access token** and enter them privately in your local terminal with `tiendanube-mcp configure --store-id <ID>` (or via `Instalar.cmd` / `tiendanube-mcp onboard`). The token prompt is masked and saved locally.
+4. Copy the **Store ID** and **Access token** and share them with your AI assistant: it saves them locally for you without you ever opening a terminal (if installing manually on Windows, enter them in `Instalar.cmd`).
 
 > Per Tiendanube's help center this option is available on certain plans. If you don't see the menu, check your plan or use Route B.
 
@@ -76,8 +76,8 @@ Works on any plan and for several stores.
 1. Create an app in Tiendanube's **Partner Portal** (`partners.tiendanube.com`). Under **Basic Data** tick **every scope**.
 2. In the app's URL settings set the **Redirect URL** to exactly `http://localhost:8765/callback`. (Tiendanube's documentation does not say whether the portal accepts `localhost`; if it does not, use Plan B below.) Do not leave the default URL: it leads to a partner-only login.
 3. Copy the app's **App ID** and **App secret** (shown in the app's details in the portal; the App ID is also the number in the authorization link).
-4. Run `tiendanube-mcp login --client-id <APP_ID>` in your local terminal (it prompts for the App secret without echoing), open the link, accept all permissions, and the token and Store ID are saved automatically.
-5. **Plan B** (if the portal rejects `localhost`): run `tiendanube-mcp login --client-id <APP_ID> --redirect-uri <YOUR_URL> --start`, accept the permissions, then run `tiendanube-mcp login --finish` and paste the full return URL privately in the terminal.
+4. Share the **App ID** and **App secret** with your AI assistant: it runs `tiendanube-mcp login` for you, opens the link, you accept all permissions, and the token + Store ID are saved automatically.
+5. **Plan B** (if the portal rejects `localhost`): your assistant gives you the link via `login --start`, you accept the permissions, and paste the full address the browser ended on so your assistant finishes the setup via `login --finish`.
 
 If you change the app's scopes later, **reinstall** the app in the store to receive a new token; your assistant repeats `login`.
 

@@ -2,14 +2,14 @@
 
 ## 1. If a user asked you to install or connect this MCP server
 
-Execute [guides/AGENT_INSTALL.md](guides/AGENT_INSTALL.md) end-to-end on the machine where the user runs **Claude Code** or **Codex**. Short summary:
+The end user is typically non-technical and may be afraid to open a terminal or edit files. Execute [guides/AGENT_INSTALL.md](guides/AGENT_INSTALL.md) end-to-end yourself on the machine running **Claude Code** or **Codex** — never hand shell commands back to the user:
 
-1. Identify which client received the request (`claude-code` or `codex`, or both if requested).
-2. Download the native release binary and `SHA256SUMS.txt` from [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest), verify the SHA-256 hash, extract into a stable user folder (`%LOCALAPPDATA%\Programs\tiendanube-mcp` on Windows, `~/.local/bin` on macOS/Linux), and confirm `tiendanube-mcp --version`.
+1. Ask permission **once** in plain friendly language, explaining that you will guide them step-by-step to obtain credentials with **full read and write access** (there is no read-only mode), ask them for the keys, save and handle them locally yourself, and configure their AI app without them opening any terminal.
+2. Identify which client received the request (`claude-code` or `codex`, or both if requested), download the native release binary and `SHA256SUMS.txt` from [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest), verify the SHA-256 hash, extract into a stable user folder (`%LOCALAPPDATA%\Programs\tiendanube-mcp` on Windows, `~/.local/bin` on macOS/Linux), and confirm `tiendanube-mcp --version`.
 3. Check `tiendanube-mcp doctor --offline --json`. If valid credentials already exist, reuse them without rotating keys.
-4. Otherwise guide the merchant ([guides/GETTING_CREDENTIALS.md](guides/GETTING_CREDENTIALS.md)) to enable **ALL available read and write permissions** (full access; there is no read-only mode), and save credentials privately in the local terminal via `tiendanube-mcp configure --store-id <ID>` (or `--token-stdin`) or `tiendanube-mcp login --client-id <APP_ID>`. Keep tokens, secrets, and OAuth callback URLs out of chat, command arguments, logs, and commits.
+4. Otherwise guide the merchant click-by-click ([guides/GETTING_CREDENTIALS.md](guides/GETTING_CREDENTIALS.md)) to enable **ALL available read and write permissions**, ask them for the credentials, and save them yourself via `tiendanube-mcp configure --store-id <ID> --token-stdin --json` or `tiendanube-mcp login --client-id <APP_ID> --client-secret-stdin --json` (cleaning temp variables right after; never commit keys or repeat them in your final summary).
 5. Register the server using `tiendanube-mcp install --client <claude-code|codex> --json` (never edit JSON/TOML client configs by hand). Verify `ok: true` and `launch_check.ok: true`.
-6. Run `tiendanube-mcp doctor --json` and follow any `nextSteps`. Ask the user to fully restart their client, then call `tiendanube_start_here` and `tiendanube_store_get`.
+6. Run `tiendanube-mcp doctor --json` and fix any `nextSteps` yourself. Tell the user simply to close and reopen their AI app, then call `tiendanube_start_here` and `tiendanube_store_get`.
 
 ## 2. If this MCP is already connected and you must work on the user's store
 

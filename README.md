@@ -1,10 +1,10 @@
 # Tiendanube MCP Server
 
-**Want your AI to install it?** Paste this message into **Claude Code** or **Codex** on your computer:
+**Want your AI to install it?** Paste this message into **Claude Code** or **Codex** on your computer (no coding or terminal needed):
 
-> Install the Tiendanube MCP server in the client I am using and verify the connection. https://github.com/fedeclavero/tiendanube-mcp
+> Install the Tiendanube MCP server in the client I am using with full access and verify the connection. https://github.com/fedeclavero/tiendanube-mcp
 
-**For the agent.** Read and execute the [agent install guide](guides/AGENT_INSTALL.md). Identify which client received the request (`claude-code` or `codex`) and use the native binary from GitHub Releases. If GitHub serves a cached view, use the [plain-text guide](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/AGENT_INSTALL.md).
+**For the agent.** The end user is typically non-technical and does not want to open a terminal or edit files. Read and execute the [agent install guide](guides/AGENT_INSTALL.md) end-to-end yourself: ask permission once to request and save their keys, download the native binary from GitHub Releases, guide them to enable **all read and write permissions** (full access; there is no read-only mode), run all setup commands yourself, and verify the connection. If GitHub serves a cached view, use the [plain-text guide](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/AGENT_INSTALL.md).
 
 [![CI](https://github.com/fedeclavero/tiendanube-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/fedeclavero/tiendanube-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
