@@ -12,6 +12,8 @@ fn command(root: &Path) -> Command {
     let mut cmd = Command::new(BINARY);
     cmd.env("CLAUDE_CONFIG_DIR", root.join("Claude ñ profile"))
         .env("CODEX_HOME", root.join("Codex ñ profile"))
+        .env("ANTIGRAVITY_CONFIG_DIR", root.join("Antigravity ñ profile"))
+        .env("AGY_CONFIG_DIR", root.join("Agy ñ profile"))
         .env("TIENDANUBE_MCP_HOME", root.join("Tiendanube ñ state"))
         .env_remove("TIENDANUBE_STORE_ID")
         .env_remove("TIENDANUBE_ACCESS_TOKEN")
@@ -31,7 +33,7 @@ fn json_output(output: &Output) -> Value {
 }
 
 #[test]
-fn native_server_registers_launches_and_uninstalls_in_both_clients() {
+fn native_server_registers_launches_and_uninstalls_in_all_supported_clients() {
     let user = tempfile::tempdir().expect("create isolated user configuration");
     let root = user.path();
     let args = [
@@ -40,6 +42,8 @@ fn native_server_registers_launches_and_uninstalls_in_both_clients() {
         "claude-code",
         "--client",
         "codex",
+        "--client",
+        "antigravity",
         "--json",
     ];
     let first = command(root).args(args).output().expect("first install");
@@ -47,14 +51,26 @@ fn native_server_registers_launches_and_uninstalls_in_both_clients() {
     let first = json_output(&first);
     assert_eq!(first["launch_check"]["server"], "tiendanube-mcp");
     assert_eq!(first["launch_check"]["has_start_here"], true);
-    assert_eq!(first["installed"].as_array().unwrap().len(), 2);
+    let installed = first["installed"].as_array().unwrap();
+    assert!(installed.len() >= 3);
 
     let claude = root.join("Claude ñ profile/.claude.json");
     let codex = root.join("Codex ñ profile/config.toml");
+    let antigravity = root.join("Antigravity ñ profile/mcp_config.json");
     let config: Value = serde_json::from_slice(&fs::read(&claude).unwrap()).unwrap();
     assert_eq!(config["mcpServers"]["tiendanube"]["args"], json!(["serve"]));
     assert_eq!(
         config["mcpServers"]["tiendanube"]["env"]["TIENDANUBE_MCP_HOME"],
+        json!(root.join("Tiendanube ñ state"))
+    );
+    let agy_config: Value = serde_json::from_slice(&fs::read(&antigravity).unwrap()).unwrap();
+    assert_eq!(
+        agy_config["mcpServers"]["tiendanube"]["args"],
+        json!(["serve"])
+    );
+    assert!(agy_config["mcpServers"]["tiendanube"]["type"].is_null());
+    assert_eq!(
+        agy_config["mcpServers"]["tiendanube"]["env"]["TIENDANUBE_MCP_HOME"],
         json!(root.join("Tiendanube ñ state"))
     );
     assert!(
@@ -67,8 +83,9 @@ fn native_server_registers_launches_and_uninstalls_in_both_clients() {
         .output()
         .expect("idempotent install");
     let next = json_output(&next);
-    assert_eq!(next["installed"][0]["status"], "unchanged");
-    assert_eq!(next["installed"][1]["status"], "unchanged");
+    for entry in next["installed"].as_array().unwrap() {
+        assert_eq!(entry["status"], "unchanged");
+    }
 
     let removals = command(root)
         .args(["uninstall", "--client", "all", "--json"])
@@ -76,10 +93,19 @@ fn native_server_registers_launches_and_uninstalls_in_both_clients() {
         .unwrap();
     let report = json_output(&removals);
     assert!(removals.status.success(), "{report}");
-    assert_eq!(report["clients"][0]["status"], "removed");
-    assert_eq!(report["clients"][1]["status"], "removed");
+    for client_id in ["claude-code", "codex", "antigravity"] {
+        let entry = report["clients"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["client"] == client_id)
+            .unwrap_or_else(|| panic!("missing uninstall entry for {client_id}"));
+        assert_eq!(entry["status"], "removed");
+    }
     let config: Value = serde_json::from_slice(&fs::read(claude).unwrap()).unwrap();
     assert!(config["mcpServers"]["tiendanube"].is_null());
+    let agy_config: Value = serde_json::from_slice(&fs::read(antigravity).unwrap()).unwrap();
+    assert!(agy_config["mcpServers"]["tiendanube"].is_null());
     assert!(
         !fs::read_to_string(codex)
             .unwrap()

@@ -1,12 +1,26 @@
 # Instalación para agentes de IA (ejecutala completa por el usuario)
 
-> **Regla principal: el usuario final no es técnico y probablemente le da miedo abrir una terminal o tocar archivos.** Vos, como agente de IA, hacés **todo el proceso de punta a punta** en su computadora (**Claude Code** o **Codex**). Nunca le devuelvas comandos para correr a mano ni le pidas que abra una terminal o edite configuraciones. Hablá en lenguaje simple y en el idioma del usuario.
+> **Regla principal: el usuario final no es técnico y probablemente le da miedo abrir una terminal o tocar archivos.** Vos, como agente de IA, hacés **todo el proceso de punta a punta** en su computadora (**Claude Code**, **Codex** o **Antigravity**). Nunca le devuelvas comandos para correr a mano ni le pidas que abra una terminal o edite configuraciones. Hablá en lenguaje simple y en el idioma del usuario.
 
 `TN` representa la ruta absoluta de `tiendanube-mcp` en los ejemplos. En Windows PowerShell guardala en `$TN` e invocala con `& $TN`. No hace falta instalar Node.js, Python, Git, Rust ni el redistribuible de Visual C++.
 
-## 0. Pedí permiso una sola vez y explicá cómo vas a trabajar
+## Si el usuario YA lo tiene instalado (actualización — NO rotar credenciales)
 
-Antes de empezar, decile algo como esto en lenguaje claro y esperá su confirmación:
+> **PROHIBIDO rotar el access token, crear una app nueva o re-autorizar OAuth si ya existen credenciales válidas.** El usuario se frustra si al actualizar se le rompen o rotan las claves.
+
+Comprobá primero si existe el archivo de credenciales del usuario:
+- Windows: `%APPDATA%\tiendanube-mcp\credentials.json`
+- Linux / macOS: `~/.config/tiendanube-mcp/credentials.json`
+
+Si ya existe:
+1. Descargá y verificá el binario nativo de la última release (Paso 1) y reemplazá el ejecutable en la carpeta fija (`%LOCALAPPDATA%\Programs\tiendanube-mcp\tiendanube-mcp.exe` en Windows, `~/.local/bin/tiendanube-mcp` en Linux/macOS). Si Windows avisa que el archivo está en uso, pedile al usuario que cierre su cliente un momento y volvé a copiarlo.
+2. Ejecutá `TN doctor --no-probe --json` (o `TN doctor --offline --json` si no hay internet). Si devuelve `"ok": true` (o `"tokenSet": true` sin `missingWriteScopes`), **NO toques `credentials.json` ni ejecutes `configure`/`login`**.
+3. Re-registrá el cliente del usuario con `TN install --client <claude-code|codex|antigravity|all> --json` (migra automáticamente cualquier registro viejo con `npx` al binario nativo en Rust y conserva el resto de los servidores MCP).
+4. Verificá `ok: true` y `launch_check.tools: 198`, y avisale al usuario qué cambió (binario nativo en Rust sin dependencias, arranque instantáneo, acceso completo en las 198 tools sin modo solo lectura, soporte nativo para Claude Code, Codex y Antigravity, y **sus credenciales quedaron intactas**) y que cierre y vuelva a abrir el cliente (o toque *Refresh* en Antigravity).
+
+## 0. Instalación nueva: pedí permiso una sola vez y explicá cómo vas a trabajar
+
+Antes de empezar una instalación desde cero, decile algo como esto en lenguaje claro y esperá su confirmación:
 
 > *"Para conectar tu tienda de Tiendanube / Nuvemshop con **acceso completo** (lectura y escritura, así puedo ver y editar tus productos, precios, stock, pedidos, cupones y combos desde el primer momento), voy a guiarte paso a paso para obtener tus claves, te las voy a pedir, las voy a guardar en tu computadora y voy a configurar todo en tu app de IA. Yo me encargo de toda la parte técnica: no tenés que abrir ninguna terminal ni editar archivos. ¿Me das permiso para hacerlo?"*
 
@@ -17,7 +31,7 @@ En cuanto el usuario diga que sí:
 
 ## 1. Elegí el cliente y descargá el binario (lo hacés vos)
 
-1. Detectá si estás en **Claude Code** o **Codex**. Registrá ese cliente (o ambos si el usuario lo pide). Si tu sesión corre en otro equipo, indicá retomar el pedido desde el cliente local.
+1. Detectá si estás en **Claude Code**, **Codex** o **Antigravity** (Desktop o CLI `agy`). Registrá ese cliente (o todos con `--client all` si el usuario lo pide). Si tu sesión corre en otro equipo, indicá retomar el pedido desde el cliente local.
 2. Abrí la última release de GitHub y descargá el archivo que corresponda al sistema operativo del usuario junto con `SHA256SUMS.txt` del mismo tag. Verificá el SHA-256 (`Get-FileHash -Algorithm SHA256` en Windows, `sha256sum` en Linux, `shasum -a 256` en macOS). [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest)
 
 | Equipo | Archivo de la release |
@@ -111,17 +125,20 @@ Comprobá `"ok": true`. Nunca repitas el token en tu respuesta al usuario ni lo 
 
 - Claude Code: `TN install --client claude-code --json`
 - Codex: `TN install --client codex --json`
-- Ambos: `TN install --client claude-code --client codex --json`
+- Antigravity (Desktop y `agy` si está instalado): `TN install --client antigravity --json` (o `--client agy` solo para la CLI)
+- Todos los detectados: `TN install --client all --json` (o pasá múltiples `--client`)
 
 El instalador conserva tus otros servidores, migra instalaciones viejas de `npx` automáticamente, guarda una copia de respaldo con fecha y verifica el arranque real por MCP (`stdio`) antes de escribir. Para un solo proyecto, agregá `--scope project`.
-- Claude Code usa `~/.claude.json` o `$CLAUDE_CONFIG_DIR/.claude.json`.
-- Codex usa `~/.codex/config.toml` o `$CODEX_HOME/config.toml`.
+- Claude Code usa `~/.claude.json` (`%USERPROFILE%\.claude.json` en Windows) o `$CLAUDE_CONFIG_DIR/.claude.json`.
+- Codex usa `~/.codex/config.toml` (`%USERPROFILE%\.codex\config.toml` en Windows) o `$CODEX_HOME/config.toml`.
+- Antigravity Desktop usa `~/.gemini/antigravity/mcp_config.json` (`%USERPROFILE%\.gemini\antigravity\mcp_config.json` en Windows) o `$ANTIGRAVITY_CONFIG_DIR/mcp_config.json`.
+- Antigravity CLI (`agy`) usa `~/.gemini/config/mcp_config.json` (`%USERPROFILE%\.gemini\config\mcp_config.json` en Windows) o `$AGY_CONFIG_DIR/mcp_config.json`.
 
 ## 5. Verificá y avisale al usuario qué hacer ahora
 
 1. En el JSON de `install`, verificá `ok: true`, `launch_check.ok: true` y `launch_check.tools: 198`.
 2. Ejecutá `TN doctor --json` y resolvé vos mismo cada `nextSteps` si algo falla (para verificar solo el estado local sin llamar a la API, usá `TN doctor --offline --json`).
-3. Avisale al usuario en lenguaje claro que **cierre por completo y vuelva a abrir** su app de IA (Claude Code o la app de ChatGPT con Codex). En la nueva sesión llamá `tiendanube_start_here` y `tiendanube_store_get`. Si la sesión actual necesita reiniciarse para cargar las herramientas, dejá claro que la instalación y verificación técnica quedaron listas y solo falta reiniciar para probarlo desde el chat.
+3. Avisale al usuario en lenguaje claro que **cierre por completo y vuelva a abrir** su app de IA (Claude Code, la app de ChatGPT con Codex o Antigravity; en Antigravity también alcanza con tocar *Settings → Installed MCP Servers → Refresh*). En la nueva sesión llamá `tiendanube_start_here` y `tiendanube_store_get`. Si la sesión actual necesita reiniciarse para cargar las herramientas, dejá claro que la instalación y verificación técnica quedaron listas y solo falta reiniciar para probarlo desde el chat.
 
 ## Modo HTTP (opcional, para conectores remotos HTTPS)
 

@@ -148,7 +148,7 @@ impl ConfigureArgs {
             result["doctor"] = report;
         }
         if ok {
-            lines.push("Próximo paso: registrá el MCP con `install --client claude-code` o `install --client codex`.".into());
+            lines.push("Próximo paso: registrá el MCP con `install --client claude-code`, `install --client codex` o `install --client antigravity`.".into());
         }
         emit(self.json, &result, &lines)?;
         Ok(exit_code(ok))
@@ -379,7 +379,7 @@ impl LoginArgs {
             ));
         }
         if ok {
-            lines.push("Próximo paso: registrá el cliente con `install --client claude-code` o `install --client codex`.".into());
+            lines.push("Próximo paso: registrá el cliente con `install --client claude-code`, `install --client codex` o `install --client antigravity`.".into());
         }
         let mut result = json!({"ok": ok, "storeId": token.store_id, "scopes": token.scopes, "file": token.file, "missingWriteScopes": missing});
         if let Some(report) = report {
@@ -393,16 +393,21 @@ impl LoginArgs {
 pub(crate) async fn guided_install() -> Result<ExitCode> {
     println!("Tiendanube MCP\n");
     println!(
-        "Instalá Claude Code o la app de ChatGPT con Codex, iniciá sesión en el cliente y cerralo antes de continuar."
+        "Instalá Claude Code, la app de ChatGPT con Codex o Antigravity, iniciá sesión en el cliente y cerralo antes de continuar."
     );
-    println!("1. Claude Code\n2. Codex en la app de ChatGPT\n3. Ambos\n0. Salir");
+    println!(
+        "1. Claude Code\n2. Codex en la app de ChatGPT\n3. Antigravity\n4. Todos (Claude Code, Codex y Antigravity)\n0. Salir"
+    );
     let clients = loop {
         match prompt("Elegí una opción: ")?.as_str() {
             "1" => break vec!["claude-code".into()],
             "2" => break vec!["codex".into()],
-            "3" => break vec!["claude-code".into(), "codex".into()],
+            "3" => break vec!["antigravity".into()],
+            "4" => {
+                break vec!["claude-code".into(), "codex".into(), "antigravity".into()];
+            }
             "0" | "" => return Ok(ExitCode::SUCCESS),
-            _ => println!("Ingresá 1, 2, 3 o 0."),
+            _ => println!("Ingresá 1, 2, 3, 4 o 0."),
         }
     };
     let saved = state::resolve()?;

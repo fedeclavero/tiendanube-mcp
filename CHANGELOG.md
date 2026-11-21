@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.1
+
+Native Antigravity support (Desktop IDE & `agy` CLI) and explicit zero-rotation upgrade guides.
+
+- **Native Antigravity support**: `tiendanube-mcp install`, `uninstall`, `clients`, `doctor`, and `onboard` (including Windows `Instalar.cmd`) now natively detect and configure **Antigravity Desktop** (`~/.gemini/antigravity/mcp_config.json` / `%USERPROFILE%\.gemini\antigravity\mcp_config.json`) and **Antigravity CLI (`agy`)** (`~/.gemini/config/mcp_config.json` / `%USERPROFILE%\.gemini\config\mcp_config.json`), alongside **Claude Code** and **Codex (ChatGPT desktop app / CLI)**.
+- **Windows 11 CI smoke test**: verifies clean Windows 11 installation across all 3 clients (Claude Code, Codex, and Antigravity) with zero Python, Node.js, Git, Rust, or VC++ Redistributable installed.
+- **Explicit zero-rotation upgrade & what-changed guides**: `README.md`, `README.es.md`, `guides/AGENT_INSTALL.md`, `AGENTS.md`, and `llms.txt` make upgrading from earlier versions (Node/TS `npx` or older binaries) crystal clear — existing credentials are reused automatically with **no token rotation, no new app, and no re-authorization**.
+
 ## 2.0.0
 
 Native Rust rewrite verified against the TypeScript baseline with `rust-anything`, standalone Windows 11 distribution, and full-access onboarding for Claude Code and Codex.

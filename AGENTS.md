@@ -1,15 +1,15 @@
 # AGENTS.md
 
-## 1. If a user asked you to install or connect this MCP server
+## 1. If a user asked you to install, update, or connect this MCP server
 
-The end user is typically non-technical and may be afraid to open a terminal or edit files. Execute [guides/AGENT_INSTALL.md](guides/AGENT_INSTALL.md) end-to-end yourself on the machine running **Claude Code** or **Codex** — never hand shell commands back to the user:
+The end user is typically non-technical and may be afraid to open a terminal or edit files. Execute [guides/AGENT_INSTALL.md](guides/AGENT_INSTALL.md) end-to-end yourself on the machine running **Claude Code**, **Codex**, or **Antigravity** (Desktop or `agy`) — never hand shell commands back to the user:
 
-1. Ask permission **once** in plain friendly language, explaining that you will guide them step-by-step to obtain credentials with **full read and write access** (there is no read-only mode), ask them for the keys, save and handle them locally yourself, and configure their AI app without them opening any terminal.
-2. Identify which client received the request (`claude-code` or `codex`, or both if requested), download the native release binary and `SHA256SUMS.txt` from [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest), verify the SHA-256 hash, extract into a stable user folder (`%LOCALAPPDATA%\Programs\tiendanube-mcp` on Windows, `~/.local/bin` on macOS/Linux), and confirm `tiendanube-mcp --version`.
-3. Check `tiendanube-mcp doctor --offline --json`. If valid credentials already exist, reuse them without rotating keys.
-4. Otherwise guide the merchant click-by-click ([guides/GETTING_CREDENTIALS.md](guides/GETTING_CREDENTIALS.md)) to enable **ALL available read and write permissions**, ask them for the credentials, and save them yourself via `tiendanube-mcp configure --store-id <ID> --token-stdin --json` or `tiendanube-mcp login --client-id <APP_ID> --client-secret-stdin --json` (cleaning temp variables right after; never commit keys or repeat them in your final summary).
-5. Register the server using `tiendanube-mcp install --client <claude-code|codex> --json` (never edit JSON/TOML client configs by hand). Verify `ok: true` and `launch_check.ok: true`.
-6. Run `tiendanube-mcp doctor --json` and fix any `nextSteps` yourself. Tell the user simply to close and reopen their AI app, then call `tiendanube_start_here` and `tiendanube_store_get`.
+1. **Check for existing credentials first (`%APPDATA%\tiendanube-mcp\credentials.json` on Windows, `~/.config/tiendanube-mcp/credentials.json` on Linux/macOS).** If updating an existing installation, **NEVER rotate keys, create a new app, or re-authorize**: download and verify the latest release binary, replace the executable, run `tiendanube-mcp doctor --no-probe --json`, and run `tiendanube-mcp install --client <claude-code|codex|antigravity|all> --json`.
+2. For a fresh install, ask permission **once** in plain friendly language, explaining that you will guide them step-by-step to obtain credentials with **full read and write access** (there is no read-only mode), ask them for the keys, save and handle them locally yourself, and configure their AI app without them opening any terminal.
+3. Identify which client received the request (`claude-code`, `codex`, `antigravity`, `agy`, or `all`), download the native release binary and `SHA256SUMS.txt` from [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest), verify the SHA-256 hash, extract into a stable user folder (`%LOCALAPPDATA%\Programs\tiendanube-mcp` on Windows, `~/.local/bin` on macOS/Linux), and confirm `tiendanube-mcp --version`.
+4. If no valid credentials exist yet, guide the merchant click-by-click ([guides/GETTING_CREDENTIALS.md](guides/GETTING_CREDENTIALS.md)) to enable **ALL available read and write permissions**, ask them for the credentials, and save them yourself via `tiendanube-mcp configure --store-id <ID> --token-stdin --json` or `tiendanube-mcp login --client-id <APP_ID> --client-secret-stdin --json` (cleaning temp variables right after; never commit keys or repeat them in your final summary).
+5. Register the server using `tiendanube-mcp install --client <claude-code|codex|antigravity|agy|all> --json` (never edit JSON/TOML client configs by hand). Verify `ok: true` and `launch_check.ok: true`.
+6. Run `tiendanube-mcp doctor --json` and fix any `nextSteps` yourself. Tell the user simply to close and reopen their AI app (or press *Refresh* in Antigravity), then call `tiendanube_start_here` and `tiendanube_store_get`.
 
 ## 2. If this MCP is already connected and you must work on the user's store
 
@@ -43,6 +43,6 @@ Rules: i18n text fields are language objects (`{"es": "..."}`); price, SKU, weig
   - `src/catalog.rs` — Declarative catalog runner backed by `src/data/endpoints.json` and `src/data/mcp_contract.json`.
   - `src/guidance.rs` — `tiendanube_start_here`, `tiendanube_find_tool`, `tiendanube_get_recipe`, resources, and `tools-doc` generator backed by `src/data/guidance.json`.
   - `src/workflows.rs` — `tiendanube_create_combo` (exact `Decimal` math, HTML escaping, draft by default) and `tiendanube_product_image_add_from_file` (magic-byte + decode limits, stdio-only).
-  - `src/state.rs`, `src/auth.rs`, `src/onboarding.rs`, `src/doctor.rs`, `src/installer.rs` — Private credential storage (`0600`, atomic lock), OAuth flow, guided onboarding, diagnostics, and Claude Code / Codex registration (preserving comments/settings/env with backups and stdio verification).
+  - `src/state.rs`, `src/auth.rs`, `src/onboarding.rs`, `src/doctor.rs`, `src/installer.rs` — Private credential storage (`0600`, atomic lock), OAuth flow, guided onboarding, diagnostics, and Claude Code / Codex / Antigravity (`agy`) registration (preserving comments/settings/env with backups and stdio verification).
   - `packaging/windows/` — Standalone Windows 11 `Instalar.cmd` and `smoke-test.ps1`.
 - Rules: no secrets in code, logs, or chat; stdio server writes logs to stderr only; keep `README.md` and `README.es.md` in sync; keep full read-write mode (no read-only mode); error messages must end with an actionable next step.

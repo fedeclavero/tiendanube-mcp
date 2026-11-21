@@ -316,7 +316,7 @@ impl DoctorArgs {
             && registered.is_empty()
             && let Some(steps) = report["nextSteps"].as_array_mut()
         {
-            steps.push(json!("Registrá el MCP en tu cliente con install --client claude-code o install --client codex."));
+            steps.push(json!("Registrá el MCP en tu cliente con install --client claude-code, install --client codex o install --client antigravity."));
         }
         if self.json {
             println!("{}", serde_json::to_string_pretty(&report)?);

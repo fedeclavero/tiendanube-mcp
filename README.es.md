@@ -1,10 +1,12 @@
 # Servidor MCP de Tiendanube
 
-**¿Querés que tu IA lo instale?** Pegá este mensaje en **Claude Code** o **Codex** en tu computadora (no necesitás saber programar ni abrir una terminal):
+**¿Querés que tu IA lo instale o lo actualice?** Pegá este mensaje en **Claude Code**, **Codex (ChatGPT)** o **Antigravity** en tu computadora (no necesitás saber programar ni abrir una terminal):
 
-> Instalá el MCP de Tiendanube en el cliente que estoy usando con acceso completo y verificá la conexión. https://github.com/fedeclavero/tiendanube-mcp
+> Instalá (o actualizá sin rotar mis credenciales) el MCP de Tiendanube en el cliente que estoy usando con acceso completo y verificá la conexión. https://github.com/fedeclavero/tiendanube-mcp
 
-**Para el agente.** El usuario final normalmente no es técnico y no quiere abrir terminales ni editar archivos. Leé y ejecutá de punta a punta la [guía de instalación para agentes](guides/AGENT_INSTALL.md): pedí permiso una sola vez para pedirle y guardar sus claves, descargá el binario de GitHub Releases, guialo para activar **todos los permisos de lectura y escritura** (acceso completo, no existe modo solo lectura), ejecutá vos todos los comandos y verificá la conexión. Si GitHub muestra una versión en caché, usá la [guía en texto plano](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/AGENT_INSTALL.md).
+**Para el agente.** El usuario final normalmente no es técnico y no quiere abrir terminales ni editar archivos. Leé y ejecutá de punta a punta la [guía de instalación para agentes](guides/AGENT_INSTALL.md):
+- **Si ya lo tenía instalado (actualización):** **NO rotes tokens, NO crees una app nueva y NO vuelvas a autorizar.** Reutilizá las credenciales existentes en `%APPDATA%\tiendanube-mcp\credentials.json` (Windows) o `~/.config/tiendanube-mcp/credentials.json` (Linux/macOS), reemplazá el binario y ejecutá `tiendanube-mcp install`.
+- **Si es instalación nueva:** Pedí permiso una sola vez para pedirle y guardar sus claves, descargá el binario nativo de GitHub Releases, guialo paso a paso para activar **todos los permisos de lectura y escritura** (acceso completo, no existe modo solo lectura), ejecutá vos todos los comandos y verificá la conexión. Si GitHub muestra una versión en caché, usá la [guía en texto plano](https://raw.githubusercontent.com/fedeclavero/tiendanube-mcp/main/guides/AGENT_INSTALL.md).
 
 [![CI](https://github.com/fedeclavero/tiendanube-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/fedeclavero/tiendanube-mcp/actions/workflows/ci.yml)
 [![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-green.svg)](LICENSE)
@@ -13,19 +15,40 @@
 
 **🇬🇧 [Read in English](README.md)** · [Sitio web](https://fedeclavero.github.io/tiendanube-mcp/es/) · [Guía para agentes](guides/AGENT_INSTALL.md) · [Referencia de herramientas](guides/TOOLS.md) · [Recetas de prompts](guides/RECIPES.md)
 
-**`tiendanube-mcp` es un servidor [MCP (Model Context Protocol)](https://modelcontextprotocol.io) gratuito y de código abierto escrito en Rust para vendedores de Tiendanube y Nuvemshop.** Conectá **Claude Code** o **Codex en la app de escritorio de ChatGPT** con tu tienda y pedile en lenguaje natural — *"¿qué productos tienen menos de 5 unidades?"*, *"subí un 12 % los precios de la categoría Verano"*, *"¿qué pedidos están pagos y sin enviar?"* — mediante **198 herramientas** que cubren **39 recursos oficiales de la API**, más flujos guiados como armar combos con imágenes locales.
+**`tiendanube-mcp` es un servidor [MCP (Model Context Protocol)](https://modelcontextprotocol.io) gratuito y de código abierto escrito en Rust para vendedores de Tiendanube y Nuvemshop.** Conectá **Claude Code**, **Codex (app de escritorio de ChatGPT / CLI)** o **Antigravity (Desktop / `agy`)** con tu tienda y pedile en lenguaje natural — *"¿qué productos tienen menos de 5 unidades?"*, *"subí un 12 % los precios de la categoría Verano"*, *"¿qué pedidos están pagos y sin enviar?"* — mediante **198 herramientas** que cubren **39 recursos oficiales de la API**, más flujos guiados como armar combos con imágenes locales.
 
 > **No está afiliado a Tiendanube ni a Nuvemshop.** Es un proyecto comunitario independiente. Tiendanube y Nuvemshop son marcas de sus respectivos dueños.
 
 ---
 
-## Instalación
+## Instalación (sin dependencias en Windows 11, macOS y Linux)
 
 No necesitás instalar Node.js, Python, Git, Rust ni el redistribuible de Visual C++. Tampoco hacen falta permisos de administrador para el MCP.
 
-- **Windows 11:** Instalá y abrí una vez **Claude Code** o **la app de ChatGPT con Codex**. Descargá `tiendanube-mcp-windows-x86_64.zip` desde [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest), tocá **Extraer todo** y abrí **`Instalar.cmd`**. El asistente te guía para crear la aplicación con **todos los permisos**, guardar las credenciales en privado y conectar el cliente elegido.
+- **Windows 11:** Instalá y abrí una vez **Claude Code**, **la app de ChatGPT con Codex** o **Antigravity**. Descargá `tiendanube-mcp-windows-x86_64.zip` desde [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest), tocá **Extraer todo** y abrí **`Instalar.cmd`** (o pegá el mensaje de arriba en tu agente para que haga todo). El asistente instala en `%LOCALAPPDATA%\Programs\tiendanube-mcp`, te guía para activar **todos los permisos**, guarda las credenciales en privado y conecta tu cliente elegido (o los tres).
 - **Linux y macOS:** Descargá y extraé el binario para tu equipo desde [GitHub Releases](https://github.com/fedeclavero/tiendanube-mcp/releases/latest) en una carpeta estable (como `~/.local/bin`) y ejecutá `tiendanube-mcp onboard` (o pegá el mensaje de arriba en tu agente para que haga todo).
-- **Si ya lo usabas:** Cerrá por completo tu cliente y repetí `Instalar.cmd` (Windows) o `tiendanube-mcp install --client all` (Linux/macOS). El servidor reutiliza tus credenciales existentes en `~/.config/tiendanube-mcp/credentials.json` (`%APPDATA%\tiendanube-mcp\credentials.json` en Windows) sin rotar claves y migra automáticamente instalaciones viejas de `npx`.
+
+## Cómo actualizar una instalación existente (sin rotar credenciales)
+
+Si ya tenías instalado `tiendanube-mcp` (incluso la versión anterior v1.x en Node.js / `npx`), **NO tenés que rotar tu token de acceso, ni crear una app nueva, ni volver a autorizar tu tienda:**
+
+1. **Cerrá por completo** Claude Code, Codex y/o Antigravity.
+2. **Windows 11:** Descargá el último `tiendanube-mcp-windows-x86_64.zip`, extraelo y abrí **`Instalar.cmd`** (o pedile a tu agente que lo actualice siguiendo [guides/AGENT_INSTALL.md](guides/AGENT_INSTALL.md)).
+3. **Linux / macOS:** Reemplazá `~/.local/bin/tiendanube-mcp` con el binario de la última release y ejecutá:
+   ```bash
+   tiendanube-mcp install --client all
+   tiendanube-mcp doctor --no-probe
+   ```
+4. Volvé a abrir tu cliente de IA (en Antigravity también podés usar *Settings → Installed MCP Servers → Refresh*).
+
+Tus credenciales existentes en `~/.config/tiendanube-mcp/credentials.json` (`%APPDATA%\tiendanube-mcp\credentials.json` en Windows) se reutilizan intactas sin rotar ninguna clave, y cualquier registro anterior con `npx` se migra automáticamente al binario nativo en Rust.
+
+### Qué cambió en v2.x (migración a Rust)
+
+- **Binario nativo en Rust (cero dependencias):** Reemplazamos Node.js/TypeScript (`npx`) por un ejecutable autónomo estático (arranque ~0 s, sin instalar Node.js, Python, Rust ni Visual C++ Redistributable en Windows 11).
+- **Acceso completo desde el momento uno:** Se eliminó el modo solo lectura — las **198 herramientas** operan con permisos completos de lectura y escritura desde el primer momento.
+- **Soporte nativo para 3 clientes:** El mismo instalador ahora registra **Claude Code**, **Codex** y **Antigravity** (Desktop y `agy`) conservando respaldos y el resto de tus servidores MCP.
+- **Más seguridad y precisión:** Aritmética decimal exacta (`Decimal`) para combos, escritura atómica `0600` de credenciales, modo HTTP solo en loopback con verificación de `Host`/`Origin` y tokens rotables, y subida de archivos locales limitada a `stdio`. Ver [CHANGELOG.md](CHANGELOG.md).
 
 ### Comandos manuales
 
@@ -35,8 +58,8 @@ tiendanube-mcp configure --store-id 123456
 # O autorizá una app del Portal de Partners con OAuth:
 tiendanube-mcp login --client-id APP_ID
 
-# 2. Registralo en Claude Code y/o Codex (conserva otros servidores, hace backup y verifica arranque MCP)
-tiendanube-mcp install --client claude-code --client codex
+# 2. Registralo en Claude Code, Codex y/o Antigravity (conserva otros servidores, hace backup y verifica arranque MCP)
+tiendanube-mcp install --client claude-code --client codex --client antigravity
 
 # 3. Verificá la conexión y los permisos
 tiendanube-mcp doctor
@@ -110,7 +133,7 @@ Lista completa con rutas y scopes requeridos: **[guides/TOOLS.md](guides/TOOLS.m
 
 ## Preguntas frecuentes
 
-**¿Qué necesito en Windows 11?** Solo **Claude Code** o **la app de ChatGPT con Codex**, un navegador y tu cuenta de Tiendanube/Nuvemshop. El ZIP de Windows es autónomo y no requiere runtimes ni permisos de administrador.
+**¿Qué necesito en Windows 11?** Solo **Claude Code**, **la app de ChatGPT con Codex** o **Antigravity**, un navegador y tu cuenta de Tiendanube/Nuvemshop. El ZIP de Windows es autónomo y no requiere runtimes ni permisos de administrador.
 
 **¿Funciona con Nuvemshop (Brasil)?** Sí. Pasá `--region nuvemshop` en `configure`/`login`, o definí `TIENDANUBE_API_DOMAIN=https://api.nuvemshop.com.br`.
 

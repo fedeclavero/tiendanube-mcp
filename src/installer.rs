@@ -21,7 +21,7 @@ const LEGACY_SOURCE: &str = "github:fedeclavero/tiendanube-mcp";
 
 #[derive(Args)]
 pub(crate) struct InstallArgs {
-    /// Claude Code (claude-code), Codex (codex) o all para detectar ambos.
+    /// Claude Code (claude-code), Codex (codex), Antigravity (antigravity / agy) o all para detectar todos.
     #[arg(long)]
     client: Vec<String>,
     /// Guardar el servidor en la configuración del usuario o del proyecto.
@@ -57,13 +57,22 @@ enum Scope {
 enum Client {
     ClaudeCode,
     Codex,
+    Antigravity,
+    AntigravityCli,
 }
 
-const CLIENTS: [Client; 2] = [Client::ClaudeCode, Client::Codex];
+const CLIENTS: [Client; 4] = [
+    Client::ClaudeCode,
+    Client::Codex,
+    Client::Antigravity,
+    Client::AntigravityCli,
+];
 
 struct Environment {
     claude_override: Option<PathBuf>,
     codex: PathBuf,
+    antigravity_override: Option<PathBuf>,
+    agy_override: Option<PathBuf>,
     home: PathBuf,
 }
 
@@ -75,6 +84,8 @@ impl Environment {
         Ok(Self {
             claude_override: env_path("CLAUDE_CONFIG_DIR"),
             codex: env_path("CODEX_HOME").unwrap_or_else(|| home.join(".codex")),
+            antigravity_override: env_path("ANTIGRAVITY_CONFIG_DIR"),
+            agy_override: env_path("AGY_CONFIG_DIR"),
             home,
         })
     }
@@ -91,6 +102,8 @@ impl Client {
         match self {
             Self::ClaudeCode => "claude-code",
             Self::Codex => "codex",
+            Self::Antigravity => "antigravity",
+            Self::AntigravityCli => "antigravity-cli",
         }
     }
 
@@ -98,6 +111,8 @@ impl Client {
         match self {
             Self::ClaudeCode => "Claude Code",
             Self::Codex => "Codex",
+            Self::Antigravity => "Antigravity",
+            Self::AntigravityCli => "Antigravity CLI (agy)",
         }
     }
 
@@ -109,6 +124,16 @@ impl Client {
                 .unwrap_or(&env.home)
                 .join(".claude.json"),
             Self::Codex => env.codex.join("config.toml"),
+            Self::Antigravity => env
+                .antigravity_override
+                .clone()
+                .unwrap_or_else(|| env.home.join(".gemini/antigravity"))
+                .join("mcp_config.json"),
+            Self::AntigravityCli => env
+                .agy_override
+                .clone()
+                .unwrap_or_else(|| env.home.join(".gemini/config"))
+                .join("mcp_config.json"),
         }
     }
 
@@ -125,6 +150,20 @@ impl Client {
                         .map_or_else(|| env.home.join(".claude").is_dir(), |path| path.is_dir())
             }
             Self::Codex => which::which("codex").is_ok() || env.codex.is_dir(),
+            Self::Antigravity => {
+                which::which("antigravity").is_ok()
+                    || env.antigravity_override.as_ref().map_or_else(
+                        || env.home.join(".gemini/antigravity").is_dir(),
+                        |path| path.is_dir(),
+                    )
+            }
+            Self::AntigravityCli => {
+                which::which("agy").is_ok()
+                    || env.agy_override.as_ref().map_or_else(
+                        || env.home.join(".gemini/antigravity-cli").is_dir(),
+                        |path| path.is_dir(),
+                    )
+            }
         }
     }
 
@@ -134,6 +173,7 @@ impl Client {
             Scope::Project => project.join(match self {
                 Self::ClaudeCode => ".mcp.json",
                 Self::Codex => ".codex/config.toml",
+                Self::Antigravity | Self::AntigravityCli => ".agents/mcp_config.json",
             }),
         }
     }
@@ -322,7 +362,13 @@ fn cst_value(value: &Value) -> CstInputValue {
     }
 }
 
-fn patch_json(filename: &Path, raw: &str, spec: &ServerSpec, force: bool) -> Result<Edit> {
+fn patch_json(
+    filename: &Path,
+    raw: &str,
+    spec: &ServerSpec,
+    force: bool,
+    include_type: bool,
+) -> Result<Edit> {
     let options = jsonc_options();
     let invalid = || {
         anyhow!(
@@ -347,7 +393,11 @@ fn patch_json(filename: &Path, raw: &str, spec: &ServerSpec, force: bool) -> Res
 
     let entry = current[key].get(&spec.name);
     let exists = entry.is_some_and(|entry| !entry.is_null());
-    let mut desired = json!({"type": "stdio", "command": spec.command, "args": ["serve"]});
+    let mut desired = if include_type {
+        json!({"type": "stdio", "command": spec.command, "args": ["serve"]})
+    } else {
+        json!({"command": spec.command, "args": ["serve"]})
+    };
     if let Some(dir) = &spec.state_dir {
         desired["env"] = json!({"TIENDANUBE_MCP_HOME": dir});
     }
@@ -631,7 +681,7 @@ fn plan_file(
     let edit = if client == Client::Codex {
         patch_toml(path, text, spec, force)?
     } else {
-        patch_json(path, text, spec, force)?
+        patch_json(path, text, spec, force, client == Client::ClaudeCode)?
     };
     let report = |status| Outcome::new(client, path.to_path_buf(), status);
     Ok(match edit {
@@ -662,6 +712,7 @@ fn plan_file(
 fn selected_clients(
     raw: &[String],
     env: &Environment,
+    scope: Scope,
     include_undetected: bool,
 ) -> Result<(Vec<Client>, Vec<&'static str>)> {
     let mut selection = raw
@@ -679,6 +730,15 @@ fn selected_clients(
             "all" => all = true,
             "claude-code" | "claude" => chosen.push(Client::ClaudeCode),
             "codex" => chosen.push(Client::Codex),
+            "antigravity" => {
+                chosen.push(Client::Antigravity);
+                if scope == Scope::User
+                    && (include_undetected || Client::AntigravityCli.detected(env))
+                {
+                    chosen.push(Client::AntigravityCli);
+                }
+            }
+            "antigravity-cli" | "agy" => chosen.push(Client::AntigravityCli),
             _ => bail!(
                 "Cliente desconocido: {id}. Próximo paso: usá uno de {} o `all`.",
                 client_choices()
@@ -796,11 +856,15 @@ impl InstallArgs {
             state_dir,
         };
         let project = std::path::absolute(self.project_dir.unwrap_or_else(|| PathBuf::from(".")))?;
-        let (clients, not_detected) = selected_clients(&self.client, &env, false)?;
+        let (clients, not_detected) = selected_clients(&self.client, &env, self.scope, false)?;
+        let mut seen_paths = std::collections::HashSet::new();
         let mut entries = Vec::new();
 
         for client in &clients {
             let path = client.target_path(&env, self.scope, &project);
+            if !seen_paths.insert(path.clone()) {
+                continue;
+            }
             entries.push(match plan_file(*client, &path, &spec, self.force) {
                 Ok(entry) => entry,
                 Err(error) => (
@@ -850,7 +914,7 @@ impl InstallArgs {
             .map(|(outcome, _)| outcome)
             .partition(|outcome| outcome.status.success());
         if clients.is_empty() {
-            next_steps.push(format!("No se detectó Claude Code ni Codex. Abrí tu cliente una vez y ejecutá `tiendanube-mcp install --client <nombre>` (nombres: {}).", client_choices()));
+            next_steps.push(format!("No se detectó Claude Code, Codex ni Antigravity. Abrí tu cliente una vez y ejecutá `tiendanube-mcp install --client <nombre>` (nombres: {}).", client_choices()));
         }
         next_steps.extend(problems.iter().filter_map(|problem| problem.detail.clone()));
         if !installed.is_empty() && !self.dry_run && !launch_failed {
@@ -931,7 +995,7 @@ fn file_error(error: anyhow::Error) -> String {
 
 #[derive(Args)]
 pub(crate) struct UninstallArgs {
-    /// Claude Code (claude-code), Codex (codex) o all.
+    /// Claude Code (claude-code), Codex (codex), Antigravity (antigravity / agy) o all.
     #[arg(long, required = true)]
     client: Vec<String>,
     #[arg(long, value_enum, default_value_t = Scope::User)]
@@ -962,10 +1026,14 @@ impl UninstallArgs {
         );
         let env = Environment::current()?;
         let project = std::path::absolute(self.project_dir.unwrap_or_else(|| PathBuf::from(".")))?;
-        let (clients, _) = selected_clients(&self.client, &env, true)?;
+        let (clients, _) = selected_clients(&self.client, &env, self.scope, true)?;
+        let mut seen_paths = std::collections::HashSet::new();
         let mut outcomes = Vec::with_capacity(clients.len());
         for client in clients {
             let path = client.target_path(&env, self.scope, &project);
+            if !seen_paths.insert(path.clone()) {
+                continue;
+            }
             let result = remove_entry(client, &path, &self.name, self.force, self.dry_run)
                 .unwrap_or_else(|error| {
                     Outcome::new(client, path, Status::Error).with_detail(file_error(error))
@@ -1290,10 +1358,10 @@ enabled_tools = ["tiendanube_store_get"]
         let path = Path::new("settings.json");
         let old = r#"{"mcpServers":{"tiendanube":{"serverUrl":"https://example.org/mcp","headers":{"Authorization":"Bearer test"}}}}"#;
         assert!(matches!(
-            patch_json(path, old, &spec(), false)?,
+            patch_json(path, old, &spec(), false, true)?,
             Edit::Conflict
         ));
-        let Edit::Write { text, .. } = patch_json(path, old, &spec(), true)? else {
+        let Edit::Write { text, .. } = patch_json(path, old, &spec(), true, true)? else {
             bail!("expected replacement");
         };
         let parsed: Value = parse_to_serde_value(&text, &jsonc_options())?;
